@@ -141,19 +141,19 @@ namespace Instagram.Infraestructure.Data.Repositories.SQL
             return false;
         }
 
-        public async Task<bool> UpdateLink(string title, string link, Guid userId)
+        public async Task<bool> UpdateLink(LinkEntity link, Guid userId)
         {
             var usuario = await _context.UserLinks.FirstOrDefaultAsync(u => u.UserId == userId);
 
             if (usuario is not null)
             {
                 // Actualiza un enlace existente si se encuentra.
-                UpdateExistingLink(usuario, title, link);
+                UpdateExistingLink(usuario, link);
             }
             else
             {
                 // Crea un nuevo enlace si no se encuentra el usuario.
-                await CreateNewLink(title, link, userId);
+                await CreateNewLink(link, userId);
             }
 
             // Guarda los cambios en la base de datos y devuelve true si la actualización tuvo éxito.
@@ -162,18 +162,18 @@ namespace Instagram.Infraestructure.Data.Repositories.SQL
             return result > 0;
         }
 
-        private static void UpdateExistingLink(UserLink usuario, string title, string link)
+        private static void UpdateExistingLink(UserLink usuario, LinkEntity link)
         {
-            usuario.Title = title;
-            usuario.Link = link;
+            usuario.Title = link.Title;
+            usuario.Link = link.Link;
         }
 
-        private async Task CreateNewLink(string title, string link, Guid userId)
+        private async Task CreateNewLink(LinkEntity link, Guid userId)
         {
             var userToDb = new UserLink
             {
-                Link = link,
-                Title = title,
+                Link = link.Link,
+                Title = link.Title,
                 UserId = userId
             };
 

@@ -104,7 +104,10 @@ namespace Instagram.App.UseCases.MediaCases.StoryCase
             if (story is null)
             {
                 // Si no encontramos la historia, devolvemos un error.
-                return ResponseType<string>.CreateErrorResponse("Story not found", System.Net.HttpStatusCode.NotFound);
+                return ResponseType<string>.CreateErrorResponse(
+                    System.Net.HttpStatusCode.NotFound,
+                    "Story not found"
+                    );
             }
 
             // Determinamos si el medio es una imagen o un video.
@@ -118,7 +121,10 @@ namespace Instagram.App.UseCases.MediaCases.StoryCase
             if (!isDeletedStoryInBlob)
             {
                 // Si la eliminación en el almacenamiento Blob falla, devolvemos un error.
-                return ResponseType<string>.CreateErrorResponse("Failed to delete media from storage", System.Net.HttpStatusCode.NotFound);
+                return ResponseType<string>.CreateErrorResponse(
+                    System.Net.HttpStatusCode.NotFound,
+                    "Failed to delete media from storage"
+                    );
             }
 
             // Intentamos eliminar la historia de MongoDB.
@@ -127,11 +133,17 @@ namespace Instagram.App.UseCases.MediaCases.StoryCase
             if (!isDeletedStoryInMongo || !isDeletedStoryInBlob)
             {
                 // Si la eliminación en MongoDB falla, devolvemos un error.
-                return ResponseType<string>.CreateErrorResponse("Failed to delete story", System.Net.HttpStatusCode.InternalServerError);
+                return ResponseType<string>.CreateErrorResponse(
+                    System.Net.HttpStatusCode.InternalServerError,
+                    "Failed to delete story"
+                    );
             }
 
             // Si todas las eliminaciones fueron exitosas, devolvemos una respuesta exitosa.
-            return ResponseType<string>.CreateSuccessResponse("The story has been deleted");
+            return ResponseType<string>.CreateSuccessResponse(
+                null,
+                System.Net.HttpStatusCode.NoContent,
+                "The story has been deleted");
         }
 
         public async Task<IReadOnlyList<FeedType<StoryTypeOut>>> GetStoriesByUserId(Guid userId)

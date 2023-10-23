@@ -117,12 +117,17 @@ namespace Instagram.App.UseCases.MediaCases.ReelCase
             // Comprueba si el post se eliminó correctamente en ambos almacenes de datos
             if (isDeletedFromMongo && isDeletedVideo)
             {
-                return ResponseType<string>.CreateSuccessResponse("Post deleted successfully.");
+                return ResponseType<string>.CreateSuccessResponse(
+                    null,
+                    HttpStatusCode.NoContent,
+                    "Post deleted successfully.");
             }
             else
             {
-                return ResponseType<string>.CreateErrorResponse("Failed to delete the post.",
-                    HttpStatusCode.InternalServerError);
+                return ResponseType<string>.CreateErrorResponse(
+                    HttpStatusCode.InternalServerError,
+                    "Failed to delete the post."
+                    );
             }
         }
 

@@ -1,9 +1,12 @@
 ﻿using Instagram.App.UseCases.Types.Shared;
+using Instagram.App.UseCases.UserCase.Types;
 using Instagram.config.helpers;
+using Instagram.Domain.Entities.User;
 using Instagram.Domain.Enums;
 using Instagram.Domain.Repositories.Interfaces.Blob;
 using Instagram.Domain.Repositories.Interfaces.Graph.User;
 using Instagram.Domain.Repositories.Interfaces.SQL.User;
+using Instagram.Infraestructure.Mappers.User;
 using System.Net;
 
 namespace Instagram.App.UseCases.UserCase.EditProfile
@@ -37,16 +40,25 @@ namespace Instagram.App.UseCases.UserCase.EditProfile
                 if (isUpdated)
                 {
                     // Si la actualización fue exitosa, devuelve una respuesta exitosa con el mensaje.
-                    return ResponseType<string>.CreateSuccessResponse(responseMessage);
+                    return ResponseType<string>.CreateSuccessResponse(
+                        bio,
+                        HttpStatusCode.OK,
+                        responseMessage);
                 }
 
                 // Si la actualización falló, devuelve una respuesta de error.
-                return ResponseType<string>.CreateErrorResponse(responseMessage, HttpStatusCode.InternalServerError);
+                return ResponseType<string>.CreateErrorResponse(
+                    HttpStatusCode.BadRequest,
+                    responseMessage
+                    );
             }
             catch (Exception ex)
             {
                 // En caso de una excepción no controlada, devuelve una respuesta de error.
-                return ResponseType<string>.CreateErrorResponse(ex.Message, HttpStatusCode.InternalServerError);
+                return ResponseType<string>.CreateErrorResponse(
+                    HttpStatusCode.InternalServerError,
+                    ex.Message
+                    );
             }
         }
 
@@ -64,11 +76,17 @@ namespace Instagram.App.UseCases.UserCase.EditProfile
                 // Realizar la actualización de la fecha de cumpleaños
                 await _sqlDbRepository.UpdateBirthday(birthday, userId);
 
-                return ResponseType<string>.CreateSuccessResponse("Your birthday has been updated successfully.");
+                return ResponseType<string>.CreateSuccessResponse(
+                    birthday.ToString(),
+                    HttpStatusCode.OK,
+                    "Your birthday has been updated successfully."
+                    );
             }
 
-            return ResponseType<string>.CreateErrorResponse("" +
-                "You changed your birthday less than 3 days ago. Please try again later.", HttpStatusCode.Conflict);
+            return ResponseType<string>.CreateErrorResponse(
+                 HttpStatusCode.Conflict,
+                 "You changed your birthday less than 3 days ago. Please try again later."
+                 );
         }
 
         public async Task<ResponseType<string>> UpdateImageProfile(IFile imageProfile, Guid userId)
@@ -99,28 +117,46 @@ namespace Instagram.App.UseCases.UserCase.EditProfile
                 if (isSaved)
                 {
                     // Crear una respuesta exitosa con el ID de usuario y un mensaje.
-                    return ResponseType<string>.CreateSuccessResponse("Your profile picture has been updated successfully.");
+                    return ResponseType<string>.CreateSuccessResponse(
+                        imageProfileUrl,
+                        HttpStatusCode.OK,
+                        "Your profile picture has been updated successfully."
+                        );
                 }
+
+                return ResponseType<string>.CreateErrorResponse(
+                    HttpStatusCode.InternalServerError,
+                    "There was an error while updating yor profile picture"
+                    );
             }
 
             // En caso de que la longitud del archivo sea cero o la actualización no sea exitosa, crear una respuesta de error.
-            return ResponseType<string>.CreateErrorResponse("There was an issue with your profile picture. Please try again later.",
-                HttpStatusCode.NoContent);
+            return ResponseType<string>.CreateErrorResponse(
+                HttpStatusCode.BadRequest,
+                "There was an issue with your profile picture. Please try again later."
+                );
         }
 
 
 
-        public async Task<ResponseType<string>> UpdateLink(string link, string title, Guid userId)
+        public async Task<ResponseType<LinkType?>> UpdateLink(LinkType link, Guid userId)
         {
             // Realizar la actualización del enlace y su título
-            bool isUpdated = await _sqlDbRepository.UpdateLink(title, link, userId);
+            var linkToDb = UserMapper.MapLinkTypeToLinkEntity(link);
+
+            bool isUpdated = await _sqlDbRepository.UpdateLink(linkToDb,userId);
 
             if (isUpdated)
             {
-                return ResponseType<string>.CreateSuccessResponse("Link has been updated successfully.");
+                return ResponseType<LinkType?>.CreateSuccessResponse(
+                    link,
+                    HttpStatusCode.OK,
+                    "Link has been updated successfully.");
             }
 
-            return ResponseType<string>.CreateErrorResponse("Failed to updated link", HttpStatusCode.InternalServerError);
+            return ResponseType<LinkType?>.CreateErrorResponse( 
+                HttpStatusCode.InternalServerError,
+                "Failed to updated link");
         }
 
 
@@ -133,8 +169,8 @@ namespace Instagram.App.UseCases.UserCase.EditProfile
             if (changes > 2)
             {
                 return ResponseType<string>.CreateErrorResponse(
-                    "You have made 2 changes in the last 14 days. Please wait before changing your name again.",
-                    HttpStatusCode.Conflict
+                    HttpStatusCode.Conflict,
+                    "You have made 2 changes in the last 14 days. Please wait before changing your name again."
                     );
             }
 
@@ -143,10 +179,17 @@ namespace Instagram.App.UseCases.UserCase.EditProfile
 
             if (isUpdated)
             {
-                return ResponseType<string>.CreateSuccessResponse("Name has been updated successfully.");
+                return ResponseType<string>.CreateSuccessResponse(
+                    name,
+                    HttpStatusCode.OK,
+                    "Name has been updated successfully."
+                    );
             }
 
-            return ResponseType<string>.CreateErrorResponse("Failed to updated name", HttpStatusCode.InternalServerError);
+            return ResponseType<string>.CreateErrorResponse(
+                HttpStatusCode.InternalServerError,
+                "Failed to updated name"
+                );
 
         }
 
@@ -160,10 +203,17 @@ namespace Instagram.App.UseCases.UserCase.EditProfile
 
             if (isUpdated)
             {
-                return ResponseType<string>.CreateSuccessResponse("Password has been updated successfully.");
+                return ResponseType<string>.CreateSuccessResponse(
+                    null,
+                    HttpStatusCode.NoContent,
+                    "Password has been updated successfully."
+                    );
             }
 
-            return ResponseType<string>.CreateErrorResponse("Failed to updated passsword", HttpStatusCode.InternalServerError);
+            return ResponseType<string>.CreateErrorResponse(
+                HttpStatusCode.InternalServerError,
+                "Failed to updated passsword"
+                );
         }
 
         public async Task<ResponseType<string>> UpdatePronoun(PronounEnum pronoun, Guid userId)
@@ -173,10 +223,17 @@ namespace Instagram.App.UseCases.UserCase.EditProfile
 
             if (isUpdated)
             {
-                return ResponseType<string>.CreateSuccessResponse("Pronoun has been updated successfully.");
+                return ResponseType<string>.CreateSuccessResponse(
+                    pronoun.ToString(),
+                    HttpStatusCode.OK,
+                    "Pronoun has been updated successfully."
+                    );
             }
 
-            return ResponseType<string>.CreateErrorResponse("Failed to updated pronoun", HttpStatusCode.InternalServerError);
+            return ResponseType<string>.CreateErrorResponse(
+                HttpStatusCode.InternalServerError,
+                "Failed to updated pronoun"
+                );
         }
 
 
@@ -196,9 +253,15 @@ namespace Instagram.App.UseCases.UserCase.EditProfile
 
             if (isUpdated)
             {
-                return ResponseType<string>.CreateSuccessResponse(message);
+                return ResponseType<string>.CreateSuccessResponse(
+                    username,
+                    HttpStatusCode.OK
+                    ,message);
             }
-            return ResponseType<string>.CreateErrorResponse(message, HttpStatusCode.InternalServerError);
+            return ResponseType<string>.CreateErrorResponse(
+                HttpStatusCode.InternalServerError,
+                message
+                );
         }
 
         public async Task<ResponseType<string>> UpdateIsPrivateProfile(Guid userId)
@@ -211,13 +274,21 @@ namespace Instagram.App.UseCases.UserCase.EditProfile
 
             if (isExists is null)
             {
-                return ResponseType<string>.CreateErrorResponse("The account doesn't exist.", HttpStatusCode.BadRequest);
+                return ResponseType<string>.CreateErrorResponse(
+                    HttpStatusCode.BadRequest,
+                    "The account doesn't exist."
+                    );
             }
 
             return isUpdated
-                ? ResponseType<string>.CreateSuccessResponse("The account's privacy state has been changed successfully.")
-                : ResponseType<string>.CreateErrorResponse("The account's privacy state hasn't been changed.", 
-                HttpStatusCode.InternalServerError);
+                ? ResponseType<string>.CreateSuccessResponse(
+                    null,
+                    HttpStatusCode.NoContent,
+                    "The account's privacy state has been changed successfully.")
+                : ResponseType<string>.CreateErrorResponse( 
+                HttpStatusCode.InternalServerError,
+                "The account's privacy state hasn't been changed."
+                );
         }
 
         public async Task<ResponseType<string>> UpdateIsVerificateProfile(Guid userId)
@@ -230,15 +301,23 @@ namespace Instagram.App.UseCases.UserCase.EditProfile
 
             if (isExists is null)
             {
-                return ResponseType<string>.CreateErrorResponse("The account doesn't exist.", HttpStatusCode.NotFound); 
+                return ResponseType<string>.CreateErrorResponse(
+                    HttpStatusCode.NotFound,
+                    "The account doesn't exist."
+                    ); 
             
             }
 
             return isUpdated
-                ? ResponseType<string>.CreateSuccessResponse("The account's verification state has been changed successfully.")
+                ? ResponseType<string>.CreateSuccessResponse(
+                    null,
+                    HttpStatusCode.NoContent
+                    ,"The account's verification state has been changed successfully.")
 
-                : ResponseType<string>.CreateErrorResponse("The account's verification state hasn't been changed.",
-                HttpStatusCode.InternalServerError);
+                : ResponseType<string>.CreateErrorResponse(
+                HttpStatusCode.InternalServerError,
+                "The account's verification state hasn't been changed."
+                );
         }
 
     }

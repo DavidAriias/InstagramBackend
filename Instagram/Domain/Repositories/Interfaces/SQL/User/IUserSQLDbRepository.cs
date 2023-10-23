@@ -15,7 +15,7 @@ namespace Instagram.Domain.Repositories.Interfaces.SQL.User
         public Task<bool> UpdateBirthday(DateOnly birthday, Guid userId);
         public Task<bool> UpdatePassword(string pass, Guid userId);
         public Task<bool> UpdateName(string name, Guid userId);
-        public Task<bool> UpdateLink(string title, string link, Guid userId);
+        public Task<bool> UpdateLink(LinkEntity link, Guid userId);
         public Task<bool> UpdateBiography(string bio, Guid userId);
         public Task<bool> UpdatePronoun(string pronoun, Guid userId);
         public Task<bool> UpdateImageProfile(Guid userId, string url);

@@ -141,15 +141,15 @@ namespace Instagram.Presentation.GraphQL.Mutations
 
         [Authorize]
         [GraphQLDescription("Here you can update the link of an user, but the user needs to be authorized")]
-        public async Task<ResponseType<string>> UpdateLink([Service] IEditProfileCase editProfileCase, string link, string title, Guid userId)
+        public async Task<ResponseType<LinkType?>> UpdateLink([Service] IEditProfileCase editProfileCase,LinkType link, Guid userId)
         {
-            if (!LinkHelper.IsLink(link)) throw new CustomGraphQlError("The link doesn't have the format for being an URL", HttpStatusCode.BadRequest);
+            if (!LinkHelper.IsLink(link.Link)) throw new CustomGraphQlError("The link doesn't have the format for being an URL", HttpStatusCode.BadRequest);
 
-            if (link.Length > 200) throw new CustomGraphQlError("The max lenght must be 200 characters for link", HttpStatusCode.BadRequest);
+            if (link.Link.Length > 200) throw new CustomGraphQlError("The max lenght must be 200 characters for link", HttpStatusCode.BadRequest);
 
-            if (title.Length > 150) throw new CustomGraphQlError("The max lenght must be 150 characters for title", HttpStatusCode.BadRequest);
+            if (link.Title.Length > 150) throw new CustomGraphQlError("The max lenght must be 150 characters for title", HttpStatusCode.BadRequest);
 
-            return await editProfileCase.UpdateLink(link, title, userId);
+            return await editProfileCase.UpdateLink(link, userId);
         }
 
         [Authorize]
@@ -302,7 +302,7 @@ namespace Instagram.Presentation.GraphQL.Mutations
 
         [Authorize]
         [GraphQLDescription("Here you can update tags for a media, but the user needs to be authorized to do it.")]
-        public async Task<ResponseType<string>> UpdateTagsToMedia([Service] ITagsCase tagsCase, TagsTypeIn tagsType)
+        public async Task<ResponseType<IReadOnlyList<string>>> UpdateTagsToMedia([Service] ITagsCase tagsCase, TagsTypeIn tagsType)
         {
             // Validar si postId es nulo o vacío
             if (string.IsNullOrEmpty(tagsType.MediaId))

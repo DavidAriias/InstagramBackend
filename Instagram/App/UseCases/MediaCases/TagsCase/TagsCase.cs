@@ -5,6 +5,7 @@ using Instagram.Domain.Repositories.Interfaces.Document.Post;
 using Instagram.Domain.Repositories.Interfaces.Document.Reel;
 using Instagram.Domain.Repositories.Interfaces.Graph.Post;
 using Instagram.Domain.Repositories.Interfaces.Graph.Reel;
+using System.Net;
 
 namespace Instagram.App.UseCases.MediaCases.TagsCase
 {
@@ -27,7 +28,7 @@ namespace Instagram.App.UseCases.MediaCases.TagsCase
             _reelNeo4jRepository = reelNeo4JRepository;
         }
 
-        public async Task<ResponseType<string>> UpdateTagsAsync(TagsTypeIn tagsType)
+        public async Task<ResponseType<IReadOnlyList<string>>> UpdateTagsAsync(TagsTypeIn tagsType)
         {
           
             // Variable para indicar si se realizó una edición.
@@ -52,11 +53,17 @@ namespace Instagram.App.UseCases.MediaCases.TagsCase
             // Si se realizó la edición correctamente, devuelve una respuesta exitosa.
             if (isEdit)
             {
-                return ResponseType<string>.CreateSuccessResponse("Tags have been updated.");
+                return ResponseType<IReadOnlyList<string>>.CreateSuccessResponse(
+                    tagsType.Tags,
+                    HttpStatusCode.OK,
+                    "Tags have been updated.");
             }
 
             // Si no se realizó la edición, devuelve una respuesta de error interno del servidor.
-            return ResponseType<string>.CreateErrorResponse("Failed to update tags.", System.Net.HttpStatusCode.InternalServerError);
+            return ResponseType<IReadOnlyList<string>>.CreateErrorResponse(
+                System.Net.HttpStatusCode.InternalServerError,
+                "Failed to update tags."
+                );
         }
 
     }

@@ -5,7 +5,7 @@ namespace Instagram.App.UseCases.MediaCases.TagsCase
 {
     public interface ITagsCase
     {
-        public Task<ResponseType<string>> UpdateTagsAsync(TagsTypeIn tagsType);
+        public Task<ResponseType<IReadOnlyList<string>>> UpdateTagsAsync(TagsTypeIn tagsType);
 
     }
 }

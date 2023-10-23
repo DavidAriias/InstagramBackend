@@ -94,8 +94,9 @@ namespace Instagram.App.UseCases.MediaCases.CommentCase
             if (user is null)
             {
                 return ResponseType<string>.CreateErrorResponse(
-                    "The user doesn't exist for making a comment.",
-                    System.Net.HttpStatusCode.Conflict);
+                    System.Net.HttpStatusCode.Conflict,
+                    "The user doesn't exist for making a comment."
+                    );
             }
 
             bool isCommentDeleted = false;
@@ -120,10 +121,15 @@ namespace Instagram.App.UseCases.MediaCases.CommentCase
             }
 
             var response = isCommentDeleted
-                ? ResponseType<string>.CreateSuccessResponse("The comment was deleted successfully.")
+                ? ResponseType<string>.CreateSuccessResponse(
+                    null,
+                    System.Net.HttpStatusCode.NoContent
+                    ,"The comment was deleted successfully.")
 
-                : ResponseType<string>.CreateErrorResponse("Failed to delete the comment.",
-                System.Net.HttpStatusCode.InternalServerError);
+                : ResponseType<string>.CreateErrorResponse(
+                System.Net.HttpStatusCode.InternalServerError,
+                "Failed to delete the comment."
+                );
 
             return response;
         }

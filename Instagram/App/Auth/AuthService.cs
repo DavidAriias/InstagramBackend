@@ -4,6 +4,7 @@ using Instagram.Domain.Repositories.Interfaces.Auth;
 using Instagram.Domain.Repositories.Interfaces.SQL.Token;
 using Instagram.Domain.Repositories.Interfaces.SQL.User;
 using Instagram.Infraestructure.Mappers.Auth;
+using System.Net;
 
 namespace Instagram.App.Auth
 {
@@ -73,10 +74,15 @@ namespace Instagram.App.Auth
             var authToDb = AuthMapper.MapAuthTypeInToAuthEntity(auth);
             bool isDeleted = await _tokenSqlRepository.DeleteRefreshTokenAsync(authToDb);
 
-            if (isDeleted) return ResponseType<string>.CreateSuccessResponse("Session was closed succesfully.");
+            if (isDeleted) return ResponseType<string>.CreateSuccessResponse(
+                null,
+                HttpStatusCode.NoContent
+                ,"Session was closed succesfully.");
 
-            return ResponseType<string>.CreateErrorResponse("Error while closing session, try again",
-                System.Net.HttpStatusCode.InternalServerError);
+            return ResponseType<string>.CreateErrorResponse(
+                System.Net.HttpStatusCode.InternalServerError,
+                "Error while closing session, try again"
+                );
         }
 
         public async Task<AuthTypeOut> GetNewAccessToken(AuthTypeIn auth)

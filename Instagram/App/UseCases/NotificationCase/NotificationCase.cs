@@ -44,12 +44,16 @@ namespace Instagram.App.UseCases.NotificationCase
             // Devuelve una respuesta según si se guardó o no el token de dispositivo.
             if (isSaved)
             {
-                return ResponseType<string>.CreateSuccessResponse("Device token saved successfully");
+                return ResponseType<string>.CreateSuccessResponse(
+                    null,
+                    System.Net.HttpStatusCode.NoContent
+                    ,"Device token saved successfully");
             }
             else
             {
                 return ResponseType<string>.CreateErrorResponse(
-                    "There was an error while saving the device token", System.Net.HttpStatusCode.InternalServerError
+                    System.Net.HttpStatusCode.InternalServerError,
+                    "There was an error while saving the device token"
                 );
             }
         }

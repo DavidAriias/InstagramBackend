@@ -2,7 +2,7 @@
 {
     public class LinkEntity
     {
-        public string? Link { get; set; }
-        public string? Title { get; set; }
+        public string Link { get; set; } = null!;
+        public string Title { get; set; } = null!;
     }
 }

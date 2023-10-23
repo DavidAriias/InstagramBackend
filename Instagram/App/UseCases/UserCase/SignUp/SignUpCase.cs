@@ -31,12 +31,18 @@ namespace Instagram.App.UseCases.UserCase.SignUp
         {
             if (await _sqlDbRepository.FindUserByUsername(user.Username) is not null)
             {
-                return ResponseType<string>.CreateErrorResponse("The username is not available", System.Net.HttpStatusCode.Conflict);
+                return ResponseType<string>.CreateErrorResponse(
+                    System.Net.HttpStatusCode.Conflict,
+                    "The username is not available"
+                    );
             }
 
             if (user.Email is not null && await _sqlDbRepository.FindUserByEmail(user.Email) is not null)
             {
-                return ResponseType<string>.CreateErrorResponse("The email is not available", System.Net.HttpStatusCode.Conflict);
+                return ResponseType<string>.CreateErrorResponse(
+                    System.Net.HttpStatusCode.Conflict,
+                    "The email is not available"
+                    );
             }
 
             // Crear un objeto de dominio a partir de los datos de entrada
@@ -56,12 +62,15 @@ namespace Instagram.App.UseCases.UserCase.SignUp
                 
                 await _sqlDbRepository.CreateUserDescription(userToDb);
 
-                return ResponseType<string>.CreateSuccessResponse("Welcome to Instagram");
+                return ResponseType<string>.CreateSuccessResponse(
+                    userId, System.Net.HttpStatusCode.Created, "Welcome to Instagram");
 
             }
 
-            return ResponseType<string>.CreateErrorResponse("There was an error while create your account, try later",
-                System.Net.HttpStatusCode.InternalServerError);
+            return ResponseType<string>.CreateErrorResponse(
+                System.Net.HttpStatusCode.InternalServerError,
+                "There was an error while create your account, try later"
+                );
         }
     }
 }

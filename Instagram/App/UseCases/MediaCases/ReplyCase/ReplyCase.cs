@@ -110,8 +110,10 @@ namespace Instagram.App.UseCases.MediaCases.ReplyCase
             if (user is null)
             {
                 // Si el usuario no se encuentra, devolver una respuesta de error.
-                return ResponseType<string>.CreateErrorResponse(errorMessage,
-                    System.Net.HttpStatusCode.NotFound);
+                return ResponseType<string>.CreateErrorResponse(
+                    System.Net.HttpStatusCode.NotFound,
+                    errorMessage
+                    );
             }
 
             var replyToDb = MediaMapper.MapReplyTypeToReplyEntity(reply);
@@ -132,11 +134,16 @@ namespace Instagram.App.UseCases.MediaCases.ReplyCase
 
             if (isDeleted)
             {
-                return ResponseType<string>.CreateSuccessResponse(successMessage);
+                return ResponseType<string>.CreateSuccessResponse(
+                    null,
+                    HttpStatusCode.NoContent,
+                    successMessage);
             }
 
-            return ResponseType<string>.CreateErrorResponse(errorMessage,
-                System.Net.HttpStatusCode.InternalServerError);
+            return ResponseType<string>.CreateErrorResponse(
+                System.Net.HttpStatusCode.InternalServerError,
+                errorMessage
+                );
         }
     }
 }

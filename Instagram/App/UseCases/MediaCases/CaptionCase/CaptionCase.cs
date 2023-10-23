@@ -3,6 +3,7 @@ using Instagram.App.UseCases.Types.Shared;
 using Instagram.Domain.Enums;
 using Instagram.Domain.Repositories.Interfaces.Document.Post;
 using Instagram.Domain.Repositories.Interfaces.Document.Reel;
+using System.Net;
 
 namespace Instagram.App.UseCases.MediaCases.CaptionCase
 {
@@ -35,12 +36,17 @@ namespace Instagram.App.UseCases.MediaCases.CaptionCase
 
             if (isUpdated)
             {
-                response = ResponseType<string>.CreateSuccessResponse("Caption updated successfully.");
+                response = ResponseType<string>.CreateSuccessResponse(
+                    captionType.Caption,    
+                    HttpStatusCode.OK,
+                    "Caption updated successfully.");
             }
             else
             {
-                response = ResponseType<string>.CreateErrorResponse("Failed to update caption.",
-                    System.Net.HttpStatusCode.InternalServerError);
+                response = ResponseType<string>.CreateErrorResponse(
+                    System.Net.HttpStatusCode.InternalServerError,
+                    "Failed to update caption."
+                    );
             }
 
             return response;

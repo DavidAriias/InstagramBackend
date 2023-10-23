@@ -5,6 +5,7 @@ using Instagram.Domain.Enums;
 using Instagram.Domain.Repositories.Interfaces.Document.Post;
 using Instagram.Domain.Repositories.Interfaces.Document.Reel;
 using Instagram.Infraestructure.Mappers.Shared.Media;
+using System.Net;
 
 namespace Instagram.App.UseCases.MediaCases.LocationCase
 {
@@ -38,12 +39,17 @@ namespace Instagram.App.UseCases.MediaCases.LocationCase
 
             if (isUpdated)
             {
-                response = ResponseType<string>.CreateSuccessResponse("Location updated successfully.");
+                response = ResponseType<string>.CreateSuccessResponse(
+                    null,
+                    HttpStatusCode.NoContent
+                    ,"Location updated successfully.");
             }
             else
             {
-                response = ResponseType<string>.CreateErrorResponse("Failed to update location.",
-                    System.Net.HttpStatusCode.InternalServerError);
+                response = ResponseType<string>.CreateErrorResponse(
+                    System.Net.HttpStatusCode.InternalServerError,
+                    "Failed to update location."
+                    );
             }
 
             return response;

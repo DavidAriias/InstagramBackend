@@ -1,6 +1,5 @@
 ﻿using Instagram.App.UseCases.UserCase.Types;
 using Instagram.config.helpers;
-using Instagram.Domain.Entities.Media;
 using Instagram.Domain.Entities.User;
 using Instagram.Infraestructure.Data.Models.SQL;
 
@@ -35,15 +34,22 @@ namespace Instagram.Infraestructure.Mappers.User
             Id = user.Id,
             ImageProfile = user.Imageprofile,
             Isverificated = user.Isverificated,
-            Link = new LinkType
-            {
-                Link = user.Link?.Link,
-                Title = user.Link?.Title
-            },
+            Link = (user.Link is not null) ? MapLinkEntityToLinkType(user.Link) : null,
             Pronoun = user.UserPronoun,
             Username = user.Username,
             IsPrivate = user.IsPrivate
 
+        };
+
+        public static LinkType MapLinkEntityToLinkType(LinkEntity link) => new()
+        {
+            Link = link.Link,
+            Title = link.Title
+        };
+        public static LinkEntity MapLinkTypeToLinkEntity(LinkType link) => new()
+        {
+            Title = link.Title,
+            Link = link.Link
         };
 
         public static UserEntity MapUserStoredProcedureToUserEntity(UserStoredProcedure userStoredProcedure) => new()
@@ -57,11 +63,11 @@ namespace Instagram.Infraestructure.Mappers.User
             Name = userStoredProcedure.Name,
             UserPronoun = userStoredProcedure.UserPronoun,
             UserBirthday = userStoredProcedure.UserBirthday,
-            Link = new LinkEntity
+            Link = (userStoredProcedure.LinkLink is not null && userStoredProcedure.LinkTitle is not null) ? new LinkEntity
             {
                 Link = userStoredProcedure.LinkLink,
                 Title = userStoredProcedure.LinkTitle
-            }
+            } : null
         };
     }
 }
