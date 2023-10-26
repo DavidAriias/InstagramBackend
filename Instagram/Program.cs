@@ -92,9 +92,9 @@ builder.Services.AddScoped<IReplyCase,ReplyCase>();
 builder.Services.AddScoped<ICommentCase,CommentCase>();
 builder.Services.AddScoped<ILikeCase,LikeCase>();
 builder.Services.AddScoped<IReelCase,ReelCase>();
-builder.Services.AddScoped<IMentionCase, MentionCase>();
-builder.Services.AddScoped<IStoryCase, StoryCase>();
-builder.Services.AddScoped<ISeachCase, SearchCase>();
+builder.Services.AddScoped<IMentionCase,MentionCase>();
+builder.Services.AddScoped<IStoryCase,StoryCase>();
+builder.Services.AddScoped<ISeachCase,SearchCase>();
 builder.Services.AddScoped<IRecommendationSystemCase, RecommendationSystemCase>();
 builder.Services.AddScoped<INotificationCase, NotificationCase>();
 
