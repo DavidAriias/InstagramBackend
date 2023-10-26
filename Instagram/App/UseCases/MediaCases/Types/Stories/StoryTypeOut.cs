@@ -5,6 +5,8 @@ namespace Instagram.App.UseCases.MediaCases.Types.Stories
 {
     public class StoryTypeOut
     {
+        public string Username { get; set; } = null!;
+        public string? ImageProfile { get; set; }
         public string StoryId { get; set; } = null!;
         public DateTime PostDate { get; set; }
         public LocationType? LocationStory { get; set; }

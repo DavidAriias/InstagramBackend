@@ -4,9 +4,6 @@ using Instagram.Domain.Repositories.Interfaces.Document.Post;
 using Instagram.Domain.Repositories.Interfaces.Document.Reel;
 using Instagram.Domain.Repositories.Interfaces.Document.Story;
 using Instagram.Domain.Repositories.Interfaces.SQL.User;
-using Instagram.Infraestructure.Mappers;
-using Instagram.Infraestructure.Mappers.Reel;
-using Instagram.Infraestructure.Mappers.Story;
 using Instagram.Infraestructure.Mappers.User;
 using Newtonsoft.Json;
 
@@ -57,12 +54,11 @@ namespace Instagram.App.UseCases.UserCase.GetProfile
             }
 
             // Mapea los datos del usuario a un objeto UserTypeOut.
-            var profile = UserMapper.MapUserEntityToUserTypeOut(userSql);
+            userSql.Posts = postUser;
+            userSql.Reels = reelUser;
+            userSql.Stories = storyUser;
 
-            // Mapea las publicaciones del usuario y asigna la lista al perfil.
-            profile.Posts = postUser?.Select(p => PostMapper.MapPostEntityToPostTypeOut(p));
-            profile.Reels = reelUser?.Select(r => ReelMapper.MapReelEntityToReelTypeOut(r));
-            profile.Stories = storyUser?.Select(s => StoryMapper.MapStoryEntityToStoryTypeOut(s));
+            var profile = UserMapper.MapUserEntityToUserTypeOut(userSql);
 
             // Almacena el perfil en la caché para futuras consultas.
             await CacheProfile(userId, profile);

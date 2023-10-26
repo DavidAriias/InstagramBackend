@@ -1,10 +1,5 @@
-﻿using Instagram.App.UseCases.MediaCases.Types.Reels;
-using Instagram.App.UseCases.MediaCases.Types.Shared.Media;
-using Instagram.App.UseCases.MediaCases.Types.Stories;
+﻿using Instagram.App.UseCases.MediaCases.Types.Stories;
 using Instagram.Domain.Entities.Media;
-using Instagram.Domain.Entities.Shared.Media;
-using Instagram.Infraestructure.Data.Models.Mongo.Reel;
-using Instagram.Infraestructure.Data.Models.Mongo.Shared.Media;
 using Instagram.Infraestructure.Data.Models.Mongo.Story;
 using Instagram.Infraestructure.Mappers.Shared.Media;
 using Instagram.Infraestructure.Mappers.Song;
@@ -21,7 +16,8 @@ namespace Instagram.Infraestructure.Mappers.Story
             MediaUrl = storyDocument.Url,
             StoryId = storyDocument.Id.ToString(),
             UserId = Guid.Parse(storyDocument.UserId),
-            PostDate = storyDocument.PublishDate
+            PostDate = storyDocument.PublishDate,
+            Duration = storyDocument.Duration
         };
 
         public static StoryDocument MapStoryEntityToStoryDocument(StoryEntity storyEntity) => new()
@@ -35,7 +31,8 @@ namespace Instagram.Infraestructure.Mappers.Story
             null,
             PublishDate = storyEntity.PostDate,
             Song = (storyEntity.SongMedia is not null) ? SongMapper
-            .MapSongMediaEntityToSongDocument(storyEntity.SongMedia) : null
+            .MapSongMediaEntityToSongDocument(storyEntity.SongMedia) : null,
+            Duration = storyEntity.Duration
         };
 
         public static StoryTypeOut MapStoryEntityToStoryTypeOut(StoryEntity storyEntity) => new()
@@ -48,10 +45,11 @@ namespace Instagram.Infraestructure.Mappers.Story
             MediaUrl = storyEntity.MediaUrl,
             SongMedia = (storyEntity.SongMedia is not null) ?
             MediaMapper
-            .MapSongPostEntityToSongPostType(storyEntity.SongMedia) : null
+            .MapSongPostEntityToSongPostType(storyEntity.SongMedia) : null,
+            Duration = storyEntity.Duration
         };
 
-        public static StoryEntity MapReelTypeInToReelEntity(StoryTypeIn storyTypeIn) => new()
+        public static StoryEntity MapStoryTypeInToStoryEntity(StoryTypeIn storyTypeIn) => new()
         {
             UserId = storyTypeIn.UserId,
             LocationStory = (storyTypeIn.Location is not null) ?
@@ -59,7 +57,9 @@ namespace Instagram.Infraestructure.Mappers.Story
             .MapLocationTypeToLocationEntity(storyTypeIn.Location) : null,
             SongMedia = (storyTypeIn.Music is not null) ?
             SongMapper
-            .MapSongPostTypeToSongPostEntity(storyTypeIn.Music) : null
+            .MapSongPostTypeToSongPostEntity(storyTypeIn.Music) : null,
+            Duration = storyTypeIn.Duration
+            
         };
     }
 }

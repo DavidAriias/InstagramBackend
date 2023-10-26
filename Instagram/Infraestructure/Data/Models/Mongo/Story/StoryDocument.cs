@@ -18,6 +18,8 @@ namespace Instagram.Infraestructure.Data.Models.Mongo.Story
 
         [BsonElement("media_url")]
         public string Url { get; set; } = null!;
+        [BsonElement("duration")]
+        public long Duration { get; set; }
 
         [BsonElement("location")]
         public LocationDocument? Location { get; set; }

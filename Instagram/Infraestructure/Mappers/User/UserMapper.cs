@@ -2,6 +2,8 @@
 using Instagram.config.helpers;
 using Instagram.Domain.Entities.User;
 using Instagram.Infraestructure.Data.Models.SQL;
+using Instagram.Infraestructure.Mappers.Reel;
+using Instagram.Infraestructure.Mappers.Story;
 
 namespace Instagram.Infraestructure.Mappers.User
 {
@@ -37,7 +39,10 @@ namespace Instagram.Infraestructure.Mappers.User
             Link = (user.Link is not null) ? MapLinkEntityToLinkType(user.Link) : null,
             Pronoun = user.UserPronoun,
             Username = user.Username,
-            IsPrivate = user.IsPrivate
+            IsPrivate = user.IsPrivate, 
+            Posts = user.Posts?.Select(p => PostMapper.MapPostEntityToPostTypeOut(p)),
+            Reels = user.Reels?.Select(r => ReelMapper.MapReelEntityToReelTypeOut(r)),
+            Stories = user.Stories?.Select(s => StoryMapper.MapStoryEntityToStoryTypeOut(s))
 
         };
 

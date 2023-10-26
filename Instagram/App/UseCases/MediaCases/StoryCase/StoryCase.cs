@@ -1,5 +1,4 @@
 ﻿using Instagram.App.UseCases.MediaCases.Types.Stories;
-using Instagram.App.UseCases.Types.Feed;
 using Instagram.App.UseCases.Types.Shared;
 using Instagram.config.helpers;
 using Instagram.Domain.Entities.User;
@@ -9,7 +8,6 @@ using Instagram.Domain.Repositories.Interfaces.Cache;
 using Instagram.Domain.Repositories.Interfaces.Document.Story;
 using Instagram.Domain.Repositories.Interfaces.Graph.User;
 using Instagram.Domain.Repositories.Interfaces.SQL.User;
-using Instagram.Infraestructure.Mappers.Feed;
 using Instagram.Infraestructure.Mappers.Story;
 using Newtonsoft.Json;
 
@@ -62,7 +60,7 @@ namespace Instagram.App.UseCases.MediaCases.StoryCase
             }
 
             // Mapeamos los datos de StoryTypeIn a una entidad de historia.
-            var storyEntity = StoryMapper.MapReelTypeInToReelEntity(storyType);
+            var storyEntity = StoryMapper.MapStoryTypeInToStoryEntity(storyType);
 
             // Establecemos la fecha de publicación actual y de expiracion.
             var date = DateTime.UtcNow;
@@ -146,10 +144,10 @@ namespace Instagram.App.UseCases.MediaCases.StoryCase
                 "The story has been deleted");
         }
 
-        public async Task<IReadOnlyList<FeedType<StoryTypeOut>>> GetStoriesByUserId(Guid userId)
+        public async Task<IReadOnlyList<StoryTypeOut>> GetStoriesByUserId(Guid userId)
         {
             // Crear una lista para almacenar los feeds de stories.
-            var feedStories = new List<FeedType<StoryTypeOut>>();
+            var feedStories = new List<StoryTypeOut>();
 
             try
             {
@@ -176,9 +174,13 @@ namespace Instagram.App.UseCases.MediaCases.StoryCase
                         // Obtener detalles del usuario seguido desde la base de datos SQL.
                         var user = await GetUserDetails(Guid.Parse(followedUser));
 
-                        // Crear un feed de stories y agregarlo a la lista.
-                        var feed = FeedMapper.MapFeedStory(user!, sortedStories);
-                        feedStories.Add(feed);
+                        // Crear un feed de stories
+                        feedStories = sortedStories.Select(story =>
+                        {
+                            story.Username = user!.Username;
+                            story.ImageProfile = user!.Imageprofile;
+                            return StoryMapper.MapStoryEntityToStoryTypeOut(story);
+                        }).ToList();
                     }
                 }
             }
@@ -199,17 +201,17 @@ namespace Instagram.App.UseCases.MediaCases.StoryCase
             return await _userSQLRepository.FindUserById(userId);
         }
 
-        private async Task<IReadOnlyList<FeedType<StoryTypeOut>>?> TryGetCachedStories(Guid userId)
+        private async Task<IReadOnlyList<StoryTypeOut>?> TryGetCachedStories(Guid userId)
         {
             // Intenta obtener el perfil desde la caché utilizando la clave única del usuario.
             var cache = await _redisRepository.GetAsync($"stories:{userId}");
 
             // Si se encuentra en la caché, deserializa y devuelve el perfil.
             return cache != null ? JsonConvert
-                .DeserializeObject<IReadOnlyList<FeedType<StoryTypeOut>>>(cache) : null;
+                .DeserializeObject<IReadOnlyList<StoryTypeOut>>(cache) : null;
         }
 
-        private async Task CacheStories(Guid userId, IReadOnlyList<FeedType<StoryTypeOut>> stories)
+        private async Task CacheStories(Guid userId, IReadOnlyList<StoryTypeOut> stories)
         {
             // Almacena el perfil en la caché con una clave única durante 5 minutos.
             await _redisRepository.SetAsync($"stories:{userId}",

@@ -67,7 +67,7 @@ namespace Instagram.Presentation.GraphQL.Queries
         [Authorize]
         [UsePaging]
         [GraphQLDescription("Get feed post about users that one user followed it using user id, but user needs to be authorized")]
-        public async Task<IReadOnlyList<FeedType<PostTypeOut>>> GetFeedPostByUserId([Service] IPostCase postCase, Guid userId)
+        public async Task<IReadOnlyList<PostTypeOut>> GetFeedPostByUserId([Service] IPostCase postCase, Guid userId)
         {
             return await postCase.GetFeedPostByUserId(userId);
         }
@@ -75,7 +75,7 @@ namespace Instagram.Presentation.GraphQL.Queries
         [Authorize]
         [UsePaging]
         [GraphQLDescription("Get feed reel about users that one user followed it using user id, but user needs to be authorized")]
-        public async Task<IReadOnlyList<FeedType<ReelTypeOut>>> GetFeedReelByUserId([Service] IReelCase reelCase, Guid userId)
+        public async Task<IReadOnlyList<ReelTypeOut>> GetFeedReelByUserId([Service] IReelCase reelCase, Guid userId)
         {
             return await reelCase.GetFeedReelByUserId(userId);
         }
@@ -83,7 +83,7 @@ namespace Instagram.Presentation.GraphQL.Queries
         [Authorize]
         [UsePaging]
         [GraphQLDescription("Get stories the useers that follows one user by userId, user needs to be authorized")]
-        public async Task<IReadOnlyList<FeedType<StoryTypeOut>>> GetStoriesFromUsersByUserId([Service] IStoryCase storyCase, Guid userId)
+        public async Task<IReadOnlyList<StoryTypeOut>> GetStoriesFromUsersByUserId([Service] IStoryCase storyCase, Guid userId)
         {
             return await storyCase.GetStoriesByUserId(userId);
         }

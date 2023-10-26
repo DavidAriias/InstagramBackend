@@ -8,6 +8,6 @@ namespace Instagram.App.UseCases.MediaCases.StoryCase
     {
         public Task<StoryEventType> CreateStory(StoryTypeIn storyType);
         public Task<ResponseType<string>> DeleteStory(string storyId, Guid userId);
-        public Task<IReadOnlyList<FeedType<StoryTypeOut>>> GetStoriesByUserId(Guid userId);
+        public Task<IReadOnlyList<StoryTypeOut>> GetStoriesByUserId(Guid userId);
     }
 }

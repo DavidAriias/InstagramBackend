@@ -8,7 +8,6 @@ using Instagram.Domain.Repositories.Interfaces.Document.Reel;
 using Instagram.Domain.Repositories.Interfaces.Graph.Reel;
 using Instagram.Domain.Repositories.Interfaces.Graph.User;
 using Instagram.Domain.Repositories.Interfaces.SQL.User;
-using Instagram.Infraestructure.Mappers.Feed;
 using Instagram.Infraestructure.Mappers.Reel;
 using Newtonsoft.Json;
 using System.Net;
@@ -131,10 +130,10 @@ namespace Instagram.App.UseCases.MediaCases.ReelCase
             }
         }
 
-        public async Task<IReadOnlyList<FeedType<ReelTypeOut>>> GetFeedReelByUserId(Guid userId)
+        public async Task<IReadOnlyList<ReelTypeOut>> GetFeedReelByUserId(Guid userId)
         {
             // Crear una lista para almacenar los feeds de reels.
-            var feedReels = new List<FeedType<ReelTypeOut>>();
+            var feedReels = new List<ReelTypeOut>();
 
             try
             {
@@ -159,8 +158,12 @@ namespace Instagram.App.UseCases.MediaCases.ReelCase
                         var user = await GetUserDetails(Guid.Parse(followedUser));
 
                         // Crear un feed de reels y agregarlo a la lista.
-                        var feed = FeedMapper.MapFeedReel(user!, lastReels);
-                        feedReels.Add(feed);
+                        feedReels = lastReels.Select(reel =>
+                        {
+                            reel.Username = user!.Username;
+                            reel.ImageProfile = user!.Imageprofile;
+                            return ReelMapper.MapReelEntityToReelTypeOut(reel);
+                        }).ToList();
                     }
                 }
             }
@@ -179,17 +182,17 @@ namespace Instagram.App.UseCases.MediaCases.ReelCase
             return await _userSQLRepository.FindUserById(userId);
         }
 
-        private async Task<IReadOnlyList<FeedType<ReelTypeOut>>?> TryGetCachedReels(Guid userId)
+        private async Task<IReadOnlyList<ReelTypeOut>?> TryGetCachedReels(Guid userId)
         {
             // Intenta obtener el perfil desde la caché utilizando la clave única del usuario.
             var cache = await _redisRepository.GetAsync($"reels:{userId}");
 
             // Si se encuentra en la caché, deserializa y devuelve el perfil.
             return cache != null ? JsonConvert
-                .DeserializeObject<IReadOnlyList<FeedType<ReelTypeOut>>>(cache) : null;
+                .DeserializeObject<IReadOnlyList<ReelTypeOut>>(cache) : null;
         }
 
-        private async Task CacheReels(Guid userId, IReadOnlyList<FeedType<ReelTypeOut>> reels)
+        private async Task CacheReels(Guid userId, IReadOnlyList<ReelTypeOut> reels)
         {
             // Almacena el perfil en la caché con una clave única durante 5 minutos.
             await _redisRepository.SetAsync($"reels:{userId}", 

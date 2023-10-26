@@ -5,6 +5,8 @@ namespace Instagram.App.UseCases.MediaCases.Types.Reels
 {
     public class ReelTypeOut
     {
+        public string Username { get; set; } = null!;
+        public string? ImageProfile { get; set; }
         public string ReelId { get; set; } = null!;
         public string? Caption { get; set; }
         public DateTime DatePublication { get; set; }

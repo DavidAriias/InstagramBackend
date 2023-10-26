@@ -5,6 +5,8 @@ namespace Instagram.App.UseCases.MediaCases.Types.Posts
 {
     public class PostTypeOut
     {
+        public string Username { get; set; } = null!;
+        public string? ImageProfile { get; set; }
         public string PostId { get; set; } = null!;
         public List<string> Images { get; set; } = null!;
         public string? Caption { get; set; }

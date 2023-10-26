@@ -8,7 +8,7 @@ namespace Instagram.App.UseCases.MediaCases.PostCase
     {
         public Task<PostEventType> CreatePostAsync(PostTypeIn postIn);
         public Task<ResponseType<string>> DeletePostAsync(string postId, Guid userId);
-        public Task<IReadOnlyList<FeedType<PostTypeOut>>> GetFeedPostByUserId(Guid userId);
+        public Task<IReadOnlyList<PostTypeOut>> GetFeedPostByUserId(Guid userId);
 
     }
 }

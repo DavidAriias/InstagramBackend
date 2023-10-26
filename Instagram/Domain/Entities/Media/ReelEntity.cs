@@ -6,6 +6,8 @@ namespace Instagram.Domain.Entities.Media
     {
         public string ReelId { get; set; } = null!;
         public Guid UserId { get; set; }
+        public string Username { get; set; } = null!;
+        public string? ImageProfile { get; set; }
         public string? Caption { get; set; }
         public DateTime DatePublication { get; set; }
         public string Url { get; set; } = null!;

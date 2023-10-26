@@ -1,6 +1,5 @@
 ﻿using Instagram.App.UseCases.MediaCases.Types.Posts;
 using Instagram.App.UseCases.MediaCases.Types.Shared.Media;
-using Instagram.App.UseCases.Types.Feed;
 using Instagram.App.UseCases.Types.Shared;
 using Instagram.config.helpers;
 using Instagram.Domain.Entities.Media;
@@ -13,7 +12,6 @@ using Instagram.Domain.Repositories.Interfaces.Graph.Post;
 using Instagram.Domain.Repositories.Interfaces.Graph.User;
 using Instagram.Domain.Repositories.Interfaces.SQL.User;
 using Instagram.Infraestructure.Mappers;
-using Instagram.Infraestructure.Mappers.Feed;
 using Newtonsoft.Json;
 using System.Net;
 
@@ -204,10 +202,10 @@ namespace Instagram.App.UseCases.MediaCases.PostCase
             }
         }
 
-        public async Task<IReadOnlyList<FeedType<PostTypeOut>>> GetFeedPostByUserId(Guid userId)
+        public async Task<IReadOnlyList<PostTypeOut>> GetFeedPostByUserId(Guid userId)
         {
             // Crear una lista para almacenar los feeds de publicaciones.
-            var feedPosts = new List<FeedType<PostTypeOut>>();
+            var feedPosts = new List<PostTypeOut>();
 
             try
             {
@@ -233,8 +231,13 @@ namespace Instagram.App.UseCases.MediaCases.PostCase
                         var user = await GetUserDetails(Guid.Parse(followedUser));
 
                         // Crear un feed de publicaciones y agregarlo a la lista.
-                        var feed = FeedMapper.MapFeedPost(user!, lastPosts);
-                        feedPosts.Add(feed);
+                        feedPosts = lastPosts.Select(post =>
+                        {
+                            post.ImageProfile = user!.Imageprofile;
+                            post.Username = user!.Username;
+                            return PostMapper.MapPostEntityToPostTypeOut(post);
+                        }).ToList();
+                       
                     }
                 }
             }
@@ -253,17 +256,17 @@ namespace Instagram.App.UseCases.MediaCases.PostCase
         {
             return await _userSQLDbRepository.FindUserById(userId);
         }
-        private async Task<IReadOnlyList<FeedType<PostTypeOut>>?> TryGetCachedPosts(Guid userId)
+        private async Task<IReadOnlyList<PostTypeOut>?> TryGetCachedPosts(Guid userId)
         {
             // Intenta obtener el perfil desde la caché utilizando la clave única del usuario.
             var cache = await _redisRepository.GetAsync($"posts:{userId}");
 
             // Si se encuentra en la caché, deserializa y devuelve el perfil.
             return cache != null ? JsonConvert
-                .DeserializeObject<IReadOnlyList<FeedType<PostTypeOut>>>(cache) : null;
+                .DeserializeObject<IReadOnlyList<PostTypeOut>>(cache) : null;
         }
 
-        private async Task CachedPosts(Guid userId, IReadOnlyList<FeedType<PostTypeOut>> posts)
+        private async Task CachedPosts(Guid userId, IReadOnlyList<PostTypeOut> posts)
         {
             // Almacena el perfil en la caché con una clave única durante 5 minutos.
             await _redisRepository.SetAsync($"posts:{userId}",

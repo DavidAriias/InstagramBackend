@@ -55,7 +55,6 @@ using Instagram.Presentation.GraphQL.Mutations;
 using Instagram.Presentation.GraphQL.Queries;
 using Instagram.Presentation.GraphQL.Suscriptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 

@@ -1,22 +1,22 @@
-#Start with base .NET SDK Image
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-#Set the working directory inside the container
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
+EXPOSE 80
+EXPOSE 443
 
-#Copy the project files and restore the dependencies
-COPY *.csproj ./
-RUN dotnet restore
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
+COPY ["Instagram/Instagram.csproj", "Instagram/"]
+RUN dotnet restore "Instagram/Instagram.csproj"
+COPY . .
+WORKDIR "/src/Instagram"
+RUN dotnet build "Instagram.csproj" -c Release -o /app/build
 
-#Copy the remaining files and build the app
-COPY . ./
-RUN dotnet publish -c Release -o out
+FROM build AS publish
+RUN dotnet publish "Instagram.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-
-#Build the runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime-env
+FROM base AS final
 WORKDIR /app
-COPY --from=build-env /app/out .
-
-#Set entry point
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Instagram.dll"]
