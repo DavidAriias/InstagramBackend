@@ -1,5 +1,4 @@
 ﻿using Instagram.App.UseCases.MediaCases.Types.Reels;
-using Instagram.App.UseCases.Types.Feed;
 using Instagram.App.UseCases.Types.Shared;
 using Instagram.Domain.Entities.User;
 using Instagram.Domain.Repositories.Interfaces.Blob;

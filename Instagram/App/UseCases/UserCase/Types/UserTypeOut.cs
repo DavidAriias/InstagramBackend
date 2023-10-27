@@ -21,6 +21,7 @@ namespace Instagram.App.UseCases.UserCase.Types
 
         [UsePaging]
         public IEnumerable<ReelTypeOut>? Reels { get; set; }
+        [UsePaging]
         public IEnumerable<StoryTypeOut>? Stories { get; set; }
 
     }

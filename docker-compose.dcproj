@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
-    <ProjectGuid>629a0b2e-ebf5-45f8-8a24-1f3a98f572be</ProjectGuid>
+    <ProjectGuid>ddfb71f4-c373-44a3-a7c9-e55032a1c88f</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}</DockerServiceUrl>
     <DockerServiceName>instagram</DockerServiceName>
