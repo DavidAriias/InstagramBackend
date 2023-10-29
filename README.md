@@ -6,7 +6,7 @@ En el siguiente repositorio, se encuentra desarrollado el backend para app como 
  <img src="https://th.bing.com/th/id/R.6710f0d23dc0341c696ada0274d5bc25?rik=N75aHNWr2X0yRw&pid=ImgRaw&r=0" width="250", height="150">
 </div>
 
-Desarrollado en C# con ASP .NET para hacer una API de tipo GraphQL, utilizando librerias como:
+Desarrollado en C# con ASP .NET Core para hacer una API de tipo GraphQL, utilizando librerias como:
 <li>Hot chocolate para utilizar GraphQL en C#</li>
 <li>EntityFramework para el mapeo de base de datos relacional</li>
 <li>MongoDB driver para mapear los objetos de MongoDB</li>
