@@ -27,7 +27,7 @@ jobs:
 
 
       - name: dotnet publish
-        run: dotnet publish your-solution-file.sln -c Release
+        run: dotnet publish Instagram.sln -c Release
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
