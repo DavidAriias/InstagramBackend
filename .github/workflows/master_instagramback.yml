@@ -22,12 +22,12 @@ jobs:
           dotnet-version: '7.x'
           include-prerelease: true
 
-      - name: Build with dotnet using solution file
-        run: dotnet build ./Instagram.sln --configuration Release
+      - name: Build with dotnet
+        run: dotnet build --configuration Release
 
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ./Instagram.sln
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
