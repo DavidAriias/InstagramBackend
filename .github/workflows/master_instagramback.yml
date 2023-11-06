@@ -23,8 +23,7 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
-
+        run: dotnet build Instagram.sln --configuration Release
 
       - name: dotnet publish
         run: dotnet publish Instagram.sln -c Release
