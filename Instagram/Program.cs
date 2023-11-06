@@ -49,7 +49,6 @@ using Instagram.Infraestructure.Services.Cloud;
 using Instagram.Infraestructure.Services.Identity;
 using Instagram.Infraestructure.Services.Music;
 using Instagram.Infraestructure.Services.PushNotifications;
-using Instagram.Infraestructure.Services.Scheduling;
 using Instagram.Infraestructure.Services.SMS;
 using Instagram.Presentation.GraphQL.Mutations;
 using Instagram.Presentation.GraphQL.Queries;
@@ -105,7 +104,6 @@ builder.Services.AddScoped<IAuthService,AuthService>();
 builder.Services.AddScoped<IPushNotificationsService,PushNotificationService>();
 builder.Services.AddScoped<IImageBlobService,ImageBlobService>();
 builder.Services.AddScoped<IVideoBlobService,VideoBlobService>();
-builder.Services.AddScoped<IQuartzJobScheduler,QuartzJobScheduler>();
 
 //Inyectando los repositorios
 builder.Services.AddScoped<IUserNeo4jRepository,UserNeo4jRepository>();
