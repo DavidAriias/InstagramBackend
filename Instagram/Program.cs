@@ -134,7 +134,7 @@ builder.Services
             ValidateLifetime = true, // Verificar si el token ha caducado
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-            .GetBytes(builder.Configuration["Jwt:SecretKey"])), // Clave secreta
+            .GetBytes(builder.Configuration["Jwt:SecretKey"]!)), // Clave secreta
             ClockSkew = TimeSpan.Zero // Sin margen de tiempo adicional
 
         };
