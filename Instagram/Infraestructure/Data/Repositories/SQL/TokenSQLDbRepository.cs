@@ -49,7 +49,7 @@ namespace Instagram.Infraestructure.Data.Repositories.SQL
             return false;
         }
 
-        public async Task<Guid> FindUserIdAsync(AuthEntity authEntity)
+        public async Task<Guid> FindRefreshTokenAsync(AuthEntity authEntity)
         {
             var refreshToken = await _context.RefreshTokens
             .Where(token => token.UserId == authEntity.UserId && token.TokenValue == authEntity.RefreshToken)
@@ -58,6 +58,15 @@ namespace Instagram.Infraestructure.Data.Repositories.SQL
             if (refreshToken is not null) return refreshToken.UserId;
 
             return Guid.Empty;
+        }
+
+        public async Task<string?> FindUserIdAsync(Guid userId)
+        {
+            var user = await _context.RefreshTokens.Where(user => user.UserId == userId).FirstOrDefaultAsync();
+
+            if (user is not null) return user.TokenValue;
+
+            return null;
         }
 
         public async Task<bool> UpdateRefreshTokenAsync(AuthEntity authEntity)

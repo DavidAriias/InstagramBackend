@@ -1,12 +1,11 @@
 ﻿using Instagram.App.UseCases.Types.Shared;
 using Instagram.config.helpers;
+using Instagram.Domain.Entities.User;
 using Instagram.Domain.Repositories.Interfaces.Auth;
 using Instagram.Domain.Repositories.Interfaces.SQL.Token;
 using Instagram.Domain.Repositories.Interfaces.SQL.User;
 using Instagram.Infraestructure.Mappers.Auth;
 using System.Net;
-using System.Security.Policy;
-using Twilio.Jwt.AccessToken;
 
 namespace Instagram.App.Auth
 {
@@ -27,7 +26,70 @@ namespace Instagram.App.Auth
 
         public async Task<AuthTypeOut> AuthenticateAsync(string identifier, string pass, AuthMethod method)
         {
-            var user = method switch
+            // Buscar al usuario según el método de autenticación especificado.
+            var user = await GetUserAsync(identifier, method);
+
+            // Verificar si el usuario existe y si la contraseña es válida.
+            if (user is null || !EncryptHelper.VerifyPassword(pass, user.Password))
+            {
+                // Devolver un error si el usuario no existe o la contraseña es incorrecta.
+                return AuthTypeOut.CreateError("Credentials aren't valid");
+            }
+
+            // Buscar el Refresh Token asociado al usuario.
+            string? refreshToken = await _tokenSqlRepository.FindUserIdAsync(user.Id);
+
+            // Si no se encuentra un Refresh Token, generarlo y guardarlo.
+            if (refreshToken is null)
+            {
+                refreshToken = _jwtService.GenerateRefreshToken(user.Id.ToString());
+
+                // Crear un nuevo Access Token.
+                string token = _jwtService.GenerateAccessToken(user.Id.ToString());
+
+                // Crear un objeto de respuesta exitosa que incluya los tokens.
+                var auth = AuthTypeOut.CreateSuccess(
+                    user.Id,
+                    token,
+                    3600,       // Duración del Access Token en segundos (1 hora).
+                    refreshToken,
+                    2592000     // Duración del Refresh Token en segundos (30 días).
+                );
+
+                // Mapear el objeto de respuesta a una entidad y almacenar el Refresh Token.
+                var authDb = AuthMapper.MapAuthTypeOutToAuthEntity(auth);
+                bool isSaved = await _tokenSqlRepository.AddRefreshTokenAsync(authDb);
+
+                // Devolver la respuesta exitosa si el Refresh Token se almacenó correctamente.
+                if (isSaved)
+                {
+                    return auth;
+                }
+                else
+                {
+                    // Devolver un error si no se pudo almacenar el Refresh Token.
+                    return AuthTypeOut.CreateError("We can't save your auth, try later");
+                }
+            }
+            else
+            {
+                // Si ya existe un Refresh Token, devolver la respuesta exitosa sin guardarlo nuevamente.
+                return AuthTypeOut.CreateSuccess(
+                    user.Id,
+                    _jwtService.GenerateAccessToken(user.Id.ToString()),
+                    3600,       // Duración del Access Token en segundos (1 hora).
+                    refreshToken,
+                    2592000     // Duración del Refresh Token en segundos (30 días).
+                );
+            }
+        }
+
+        private async Task<UserEntity?> GetUserAsync(string identifier, AuthMethod method)
+        {
+            // Método privado para buscar al usuario según el método de autenticación especificado.
+            // Dependiendo del método, buscar por correo electrónico, nombre de usuario, número de teléfono, o ID de usuario.
+            // Retorna null si no se encuentra el usuario.
+            return method switch
             {
                 AuthMethod.Email => await _userRepository.FindUserByEmail(identifier),
                 AuthMethod.Username => await _userRepository.FindUserByUsername(identifier),
@@ -35,41 +97,8 @@ namespace Instagram.App.Auth
                 AuthMethod.UserId => await _userRepository.FindUserById(Guid.Parse(identifier)),
                 _ => null
             };
-
-            if (user is null || !EncryptHelper.VerifyPassword(pass, user.Password))
-            {
-                // Si el usuario no existe o la contraseña es incorrecta, devuelve null.
-                return AuthTypeOut.CreateError("Credentials aren't valid");
-            }
-
-          
-            // Si el usuario y la contraseña son válidos, genera el token JWT.
-            string token = _jwtService.GenerateAccessToken(user.Id.ToString());
-            string refreshToken = _jwtService.GenerateRefreshToken(user.Id.ToString());
-
-            var auth = AuthTypeOut.CreateSuccess(
-                user.Id,
-                token,
-                3600,
-                refreshToken,
-                2592000
-                );
-
-            var authDb = AuthMapper.MapAuthTypeOutToAuthEntity(auth);
-
-
-            bool isSaved = await _tokenSqlRepository.AddRefreshTokenAsync(authDb);
-
-            if (isSaved)
-            {
-                return auth;
-            } else
-            {
-                return AuthTypeOut.CreateError("We can't save your auth, try later");
-            }
-
-            
         }
+
 
         public async Task<ResponseType<string>> CloseSession(AuthTypeIn auth)
         {
@@ -87,56 +116,37 @@ namespace Instagram.App.Auth
                 );
         }
 
-        public async Task<AuthTypeOut> GetNewAccessToken(AuthTypeIn auth)
+        public async Task<AuthTypeOut> CheckStatus(AuthTypeIn auth)
         {
-            var authDb = AuthMapper.MapAuthTypeInToAuthEntity(auth);
-            // Obtiene el UserId asociado al token de refresco.
-            var userId = await _tokenSqlRepository.FindUserIdAsync(authDb);
-
-            if (userId == Guid.Empty)
-            {
-                return AuthTypeOut.CreateError("Refresh token isn't valid");
-            }
-
-            // Genera un nuevo token de acceso.
-            string accessToken = _jwtService.GenerateAccessToken(userId.ToString()!);
-
-            // Puedes especificar la duración del token de acceso, aquí se usa 3600 segundos (1 hora) como en tu ejemplo.
-            long accessTokenDuration = 3600;
-
-            // Puedes devolver el nuevo token de acceso.
-            return AuthTypeOut.CreateSuccess(userId, accessToken, accessTokenDuration, auth.Token, 2592000);
-        }
-
-
-        public async Task<AuthTypeOut> GetNewRefreshToken(AuthTypeIn auth)
-        {
-            var authDb = AuthMapper.MapAuthTypeInToAuthEntity(auth);
-            // Obtiene el UserId asociado al token de refresco.
-            var userId = await _tokenSqlRepository.FindUserIdAsync(authDb);
-
-            if (userId == Guid.Empty)
-            {
-                return AuthTypeOut.CreateError("Refresh token isn't valid");
-            }
-
-            string newRefreshToken = _jwtService.GenerateRefreshToken(userId.ToString()!);
-
-            long newRefreshTokenDuration = 2592000;
-
-            return AuthTypeOut.CreateSuccess(userId, "", 0, newRefreshToken, newRefreshTokenDuration);
-        }
-
-        public async Task<ResponseType<string>> CheckStatus(AuthTypeIn auth)
-        {
-            bool isValid = await _jwtService.IsValidateToken(auth.Token);
+            var isValid = _jwtService.IsTokenValid(auth.Token);
+            var isRefreshToken = _jwtService.IsRefreshToken(auth.Token);
 
             if (!isValid)
             {
-                return ResponseType<string>.CreateErrorResponse(HttpStatusCode.Conflict,"Token has expired, renew it");
+                return AuthTypeOut.CreateError("Token has expired, renew it");
             }
 
-            return ResponseType<string>.CreateSuccessResponse(null,HttpStatusCode.OK,"Token hasn't expired");
+            var authDb = AuthMapper.MapAuthTypeInToAuthEntity(auth);
+            var userId = await _tokenSqlRepository.FindRefreshTokenAsync(authDb);
+
+            if (userId == Guid.Empty)
+            {
+                return AuthTypeOut.CreateError("Token isn't valid");
+            }
+
+            if (isRefreshToken)
+            {
+                var newRefreshToken = _jwtService.GenerateRefreshToken(userId.ToString());
+                var newRefreshTokenDuration = 2592000; // 30 días
+
+                return AuthTypeOut.CreateSuccess(userId, "", 0, newRefreshToken, newRefreshTokenDuration);
+            }
+
+            var accessToken = _jwtService.GenerateAccessToken(userId.ToString());
+            var accessTokenDuration = 3600; // 1 hora
+
+            return AuthTypeOut.CreateSuccess(userId, accessToken, accessTokenDuration, auth.Token, 2592000);
         }
+
     }
 }

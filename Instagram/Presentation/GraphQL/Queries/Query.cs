@@ -90,7 +90,7 @@ namespace Instagram.Presentation.GraphQL.Queries
         }
 
         [GraphQLDescription("Check status about your token (access or refresh)")]
-        public async Task<ResponseType<string>> CheckTokenStatus([Service] IAuthService authService, AuthTypeIn authType)
+        public async Task<AuthTypeOut> CheckTokenStatus([Service] IAuthService authService, AuthTypeIn authType)
         {
             return await authService.CheckStatus(authType);
         }

@@ -26,7 +26,7 @@ namespace Instagram.Infraestructure.Services.Identity
                 new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
             };
             //Cambiar a 60 mins
-            return GenerateToken(accessClaims, TimeSpan.FromMinutes(2));  // Retorna el token de acceso
+            return GenerateToken(accessClaims, TimeSpan.FromMinutes(60));  // Retorna el token de acceso
         }
 
         public string GenerateRefreshToken(string userId)
@@ -58,13 +58,59 @@ namespace Instagram.Infraestructure.Services.Identity
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
-        public async Task<bool> IsValidateToken(string token)
+        public bool IsTokenValid(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var secretKey = _configuration["Jwt:SecretKey"];
+            var validationParameters = GetValidationParameters(); // Define tus parámetros de validación aquí
 
-            var validationParameters = new TokenValidationParameters
+            try
+            {
+                tokenHandler.ValidateToken(token, validationParameters, out SecurityToken securityToken);
+
+                // Verificar si el token no está expirado
+                var isValidLifetime = IsTokenValidLifetime(securityToken);
+
+                return isValidLifetime;
+            }
+            catch (SecurityTokenException)
+            {
+                return false; // Token no válido
+            }
+        }
+
+        public bool IsRefreshToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var validationParameters = GetValidationParameters();
+
+            try
+            {
+
+                var claimsPrincipal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken securityToken);
+
+                // Verificar si la reclamación "isRefreshToken" existe y su valor es "true"
+                var isRefreshTokenClaim = claimsPrincipal.HasClaim(c => c.Type == "isRefreshToken" && c.Value == "true");
+
+                return true;
+
+            } catch (SecurityTokenException)
+            {
+                return false;
+            }
+        }
+
+        private static bool IsTokenValidLifetime(SecurityToken securityToken)
+        {
+            // Verificar si el token no está expirado
+            return securityToken.ValidTo > DateTime.UtcNow;
+        }
+
+        // Método auxiliar para obtener los parámetros de validación
+        private TokenValidationParameters GetValidationParameters()
+        {
+            var secretKey = _configuration["Jwt:SecretKey"];
+            // Define los parámetros de validación según tus necesidades
+            return new TokenValidationParameters
             {
                 ValidateIssuer = false,
                 ValidateAudience = false,
@@ -74,20 +120,8 @@ namespace Instagram.Infraestructure.Services.Identity
                 .GetBytes(secretKey!)), // Clave secreta
                 ClockSkew = TimeSpan.Zero // Sin margen de tiempo adicional
             };
-
-            try
-            {
-                // Valida el token y realiza otras verificaciones necesarias
-                await tokenHandler.ValidateTokenAsync(token, validationParameters);
-                return true;
-            }
-            catch (SecurityTokenException ex)
-            {
-                // La validación falló
-                _logger.LogError($"Error to validate token: {ex.Message}");
-                return false;
-            }
         }
+
 
     }
 }

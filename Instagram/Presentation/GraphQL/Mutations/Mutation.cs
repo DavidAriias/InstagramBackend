@@ -536,18 +536,5 @@ namespace Instagram.Presentation.GraphQL.Mutations
             return await authService.CloseSession(auth);
         }
 
-     
-        [GraphQLDescription("Here you can renovate your refresh token")]
-        public async Task<AuthTypeOut> UpdateRefreshToken([Service] IAuthService authService,AuthTypeIn auth)
-        {
-            return await authService.GetNewRefreshToken(auth);
-        }
-
-        [Authorize]
-        [GraphQLDescription("Here you can renovate your access token")]
-        public async Task<AuthTypeOut> UpdateAccessToken([Service] IAuthService authService, AuthTypeIn auth)
-        {
-            return await authService.GetNewAccessToken(auth);
-        }
     }
 }
