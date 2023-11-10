@@ -5,6 +5,8 @@ using Instagram.Domain.Repositories.Interfaces.SQL.Token;
 using Instagram.Domain.Repositories.Interfaces.SQL.User;
 using Instagram.Infraestructure.Mappers.Auth;
 using System.Net;
+using System.Security.Policy;
+using Twilio.Jwt.AccessToken;
 
 namespace Instagram.App.Auth
 {
@@ -123,6 +125,18 @@ namespace Instagram.App.Auth
             long newRefreshTokenDuration = 2592000;
 
             return AuthTypeOut.CreateSuccess(userId, "", 0, newRefreshToken, newRefreshTokenDuration);
+        }
+
+        public async Task<ResponseType<string>> CheckStatus(AuthTypeIn auth)
+        {
+            bool isValid = await _jwtService.IsValidateToken(auth.Token);
+
+            if (!isValid)
+            {
+                return ResponseType<string>.CreateErrorResponse(HttpStatusCode.Conflict,"Token has expired, renew it");
+            }
+
+            return ResponseType<string>.CreateSuccessResponse(null,HttpStatusCode.OK,"Token hasn't expired");
         }
     }
 }

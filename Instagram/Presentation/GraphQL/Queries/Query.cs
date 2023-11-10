@@ -1,4 +1,5 @@
 ﻿using HotChocolate.Authorization;
+using Instagram.App.Auth;
 using Instagram.App.UseCases.MediaCases.PostCase;
 using Instagram.App.UseCases.MediaCases.ReelCase;
 using Instagram.App.UseCases.MediaCases.StoryCase;
@@ -8,6 +9,7 @@ using Instagram.App.UseCases.MediaCases.Types.Stories;
 using Instagram.App.UseCases.MusicCase;
 using Instagram.App.UseCases.SearchCase;
 using Instagram.App.UseCases.Types.Search;
+using Instagram.App.UseCases.Types.Shared;
 using Instagram.App.UseCases.UserCase.Followed;
 using Instagram.App.UseCases.UserCase.Followers;
 using Instagram.App.UseCases.UserCase.GetProfile;
@@ -85,6 +87,12 @@ namespace Instagram.Presentation.GraphQL.Queries
         public async Task<IReadOnlyList<StoryTypeOut>> GetStoriesFromUsersByUserId([Service] IStoryCase storyCase, Guid userId)
         {
             return await storyCase.GetStoriesByUserId(userId);
+        }
+
+        [GraphQLDescription("Check status about your token (access or refresh)")]
+        public async Task<ResponseType<string>> CheckTokenStatus([Service] IAuthService authService, AuthTypeIn authType)
+        {
+            return await authService.CheckStatus(authType);
         }
 
     }

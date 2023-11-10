@@ -8,5 +8,6 @@ namespace Instagram.App.Auth
         public Task<AuthTypeOut> GetNewRefreshToken(AuthTypeIn auth);
         public Task<AuthTypeOut> GetNewAccessToken(AuthTypeIn auth);
         public Task<ResponseType<string>> CloseSession(AuthTypeIn auth);
+        public Task<ResponseType<string>> CheckStatus(AuthTypeIn auth);
     }
 }
