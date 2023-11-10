@@ -121,9 +121,9 @@ namespace Instagram.App.Auth
             var isValid = _jwtService.IsTokenValid(auth.Token);
             var isRefreshToken = _jwtService.IsRefreshToken(auth.Token);
 
-            if (!isValid)
+            if (isValid)
             {
-                return AuthTypeOut.CreateError("Token has expired, renew it");
+                return AuthTypeOut.CreateError("Token hasn't expired");
             }
 
             var authDb = AuthMapper.MapAuthTypeInToAuthEntity(auth);
