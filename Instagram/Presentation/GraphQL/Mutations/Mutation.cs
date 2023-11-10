@@ -535,6 +535,6 @@ namespace Instagram.Presentation.GraphQL.Mutations
         {
             return await authService.CloseSession(auth);
         }
-
+        
     }
 }

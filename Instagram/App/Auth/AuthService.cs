@@ -33,7 +33,7 @@ namespace Instagram.App.Auth
             if (user is null || !EncryptHelper.VerifyPassword(pass, user.Password))
             {
                 // Devolver un error si el usuario no existe o la contraseña es incorrecta.
-                return AuthTypeOut.CreateError("Credentials aren't valid");
+                return AuthTypeOut.CreateError("Credentials aren't valid", HttpStatusCode.BadRequest);
             }
 
             // Buscar el Refresh Token asociado al usuario.
@@ -53,7 +53,8 @@ namespace Instagram.App.Auth
                     token,
                     3600,       // Duración del Access Token en segundos (1 hora).
                     refreshToken,
-                    2592000     // Duración del Refresh Token en segundos (30 días).
+                    2592000,     // Duración del Refresh Token en segundos (30 días).
+                    HttpStatusCode.Accepted
                 );
 
                 // Mapear el objeto de respuesta a una entidad y almacenar el Refresh Token.
@@ -68,7 +69,7 @@ namespace Instagram.App.Auth
                 else
                 {
                     // Devolver un error si no se pudo almacenar el Refresh Token.
-                    return AuthTypeOut.CreateError("We can't save your auth, try later");
+                    return AuthTypeOut.CreateError("We can't save your auth, try later", HttpStatusCode.InternalServerError);
                 }
             }
             else
@@ -79,7 +80,8 @@ namespace Instagram.App.Auth
                     _jwtService.GenerateAccessToken(user.Id.ToString()),
                     3600,       // Duración del Access Token en segundos (1 hora).
                     refreshToken,
-                    2592000     // Duración del Refresh Token en segundos (30 días).
+                    2592000,
+                    HttpStatusCode.OK// Duración del Refresh Token en segundos (30 días).
                 );
             }
         }
@@ -123,7 +125,7 @@ namespace Instagram.App.Auth
 
             if (isValid)
             {
-                return AuthTypeOut.CreateError("Token hasn't expired");
+                return AuthTypeOut.CreateError("Token hasn't expired", HttpStatusCode.NotModified);
             }
 
             var authDb = AuthMapper.MapAuthTypeInToAuthEntity(auth);
@@ -131,7 +133,7 @@ namespace Instagram.App.Auth
 
             if (userId == Guid.Empty)
             {
-                return AuthTypeOut.CreateError("Token isn't valid");
+                return AuthTypeOut.CreateError("Token is not valid", HttpStatusCode.Unauthorized);
             }
 
             if (isRefreshToken)
@@ -139,14 +141,15 @@ namespace Instagram.App.Auth
                 var newRefreshToken = _jwtService.GenerateRefreshToken(userId.ToString());
                 var newRefreshTokenDuration = 2592000; // 30 días
 
-                return AuthTypeOut.CreateSuccess(userId, "", 0, newRefreshToken, newRefreshTokenDuration);
+                return AuthTypeOut.CreateSuccess(userId, "", 0, newRefreshToken, newRefreshTokenDuration, HttpStatusCode.OK);
             }
 
             var accessToken = _jwtService.GenerateAccessToken(userId.ToString());
             var accessTokenDuration = 3600; // 1 hora
 
-            return AuthTypeOut.CreateSuccess(userId, accessToken, accessTokenDuration, auth.Token, 2592000);
+            return AuthTypeOut.CreateSuccess(userId, accessToken, accessTokenDuration, auth.Token, 2592000, HttpStatusCode.OK);
         }
+
 
     }
 }
