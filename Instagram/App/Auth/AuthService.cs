@@ -123,9 +123,17 @@ namespace Instagram.App.Auth
             bool isValidToken = _jwtService.IsTokenValid(auth.Token!);
             bool isValidRefreshToken = _jwtService.IsTokenValid(auth.RefreshToken);
 
+            var accessTokenDuration = 3600; // 1 hora
+            var refreshTokenDuration = 2592000; // 30 días
             if (isValidToken)
             {
-                return AuthTypeOut.CreateError("Access token hasn't expired", HttpStatusCode.NotModified);
+                return AuthTypeOut.CreateSuccess(
+                    auth.UserId,
+                    auth.Token!,
+                    accessTokenDuration,
+                    auth.RefreshToken,
+                    refreshTokenDuration,
+                    HttpStatusCode.NotModified);
             }
 
 
@@ -140,14 +148,14 @@ namespace Instagram.App.Auth
             if (!isValidRefreshToken)
             {
                 var newRefreshToken = _jwtService.GenerateRefreshToken(userId.ToString());
-                var newRefreshTokenDuration = 2592000; // 30 días
+               
 
-                return AuthTypeOut.CreateSuccess(userId, auth.Token!, 0, newRefreshToken, newRefreshTokenDuration, HttpStatusCode.OK);
+                return AuthTypeOut.CreateSuccess(userId, auth.Token!, 0, newRefreshToken, refreshTokenDuration, HttpStatusCode.OK);
             }
 
   
             var accessToken = _jwtService.GenerateAccessToken(userId.ToString());
-            var accessTokenDuration = 3600; // 1 hora
+            
 
             return AuthTypeOut.CreateSuccess(userId, accessToken, accessTokenDuration, auth.Token!, 2592000, HttpStatusCode.OK);
         }
