@@ -21,7 +21,8 @@ namespace Instagram.Infraestructure.Mappers.Auth
 
         public static AuthEntity MapAuthTypeInToAuthEntity(AuthTypeIn auth) => new()
         {
-            RefreshToken = auth.Token,
+            AccessToken = auth.Token!,
+            RefreshToken = auth.RefreshToken,
             UserId = auth.UserId
         };
     }

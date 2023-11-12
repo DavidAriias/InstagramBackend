@@ -530,7 +530,7 @@ namespace Instagram.Presentation.GraphQL.Mutations
         }
 
         [Authorize]
-        [GraphQLDescription("Here you must send refresh token when user closes session in the app, you must send refresh toke")]
+        [GraphQLDescription("Here you must send refresh token when user closes session in the app, the access token is optional if you send it")]
         public async Task<ResponseType<string>> CloseSession([Service] IAuthService authService, AuthTypeIn auth)
         {
             return await authService.CloseSession(auth);

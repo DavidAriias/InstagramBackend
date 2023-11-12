@@ -120,34 +120,36 @@ namespace Instagram.App.Auth
 
         public async Task<AuthTypeOut> CheckStatus(AuthTypeIn auth)
         {
-            var isValid = _jwtService.IsTokenValid(auth.Token);
-            var isRefreshToken = _jwtService.IsRefreshToken(auth.Token);
+            bool isValidToken = _jwtService.IsTokenValid(auth.Token!);
+            bool isValidRefreshToken = _jwtService.IsTokenValid(auth.RefreshToken);
 
-            if (isValid)
+            if (isValidToken)
             {
-                return AuthTypeOut.CreateError("Token hasn't expired", HttpStatusCode.NotModified);
+                return AuthTypeOut.CreateError("Access token hasn't expired", HttpStatusCode.NotModified);
             }
+
 
             var authDb = AuthMapper.MapAuthTypeInToAuthEntity(auth);
             var userId = await _tokenSqlRepository.FindRefreshTokenAsync(authDb);
 
             if (userId == Guid.Empty)
             {
-                return AuthTypeOut.CreateError("Token is not valid", HttpStatusCode.Unauthorized);
+                return AuthTypeOut.CreateError("Token refresh is not valid", HttpStatusCode.Unauthorized);
             }
 
-            if (isRefreshToken)
+            if (!isValidRefreshToken)
             {
                 var newRefreshToken = _jwtService.GenerateRefreshToken(userId.ToString());
                 var newRefreshTokenDuration = 2592000; // 30 días
 
-                return AuthTypeOut.CreateSuccess(userId, "", 0, newRefreshToken, newRefreshTokenDuration, HttpStatusCode.OK);
+                return AuthTypeOut.CreateSuccess(userId, auth.Token!, 0, newRefreshToken, newRefreshTokenDuration, HttpStatusCode.OK);
             }
 
+  
             var accessToken = _jwtService.GenerateAccessToken(userId.ToString());
             var accessTokenDuration = 3600; // 1 hora
 
-            return AuthTypeOut.CreateSuccess(userId, accessToken, accessTokenDuration, auth.Token, 2592000, HttpStatusCode.OK);
+            return AuthTypeOut.CreateSuccess(userId, accessToken, accessTokenDuration, auth.Token!, 2592000, HttpStatusCode.OK);
         }
 
 

@@ -16,6 +16,7 @@ using Instagram.App.UseCases.UserCase.GetProfile;
 using Instagram.App.UseCases.UserCase.SuggestFollowers;
 using Instagram.App.UseCases.UserCase.Types;
 using Instagram.Domain.Errors;
+using System.Net;
 
 namespace Instagram.Presentation.GraphQL.Queries
 {
@@ -89,9 +90,10 @@ namespace Instagram.Presentation.GraphQL.Queries
             return await storyCase.GetStoriesByUserId(userId);
         }
 
-        [GraphQLDescription("Check status about your token (access or refresh)")]
+        [GraphQLDescription("Check status about yours tokens, you must send refresh and access token , if some token is expired it's renew it")]
         public async Task<AuthTypeOut> CheckTokenStatus([Service] IAuthService authService, AuthTypeIn authType)
         {
+            if (authType.Token is null) throw new CustomGraphQlError("You must send access token", HttpStatusCode.BadRequest);
             return await authService.CheckStatus(authType);
         }
 
