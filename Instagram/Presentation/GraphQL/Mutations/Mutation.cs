@@ -62,8 +62,7 @@ namespace Instagram.Presentation.GraphQL.Mutations
             else return new SmsType(false, "The code is wrong");
         }
 
-        [Authorize]
-        [GraphQLDescription("Sign up session with your email or phone number, if the chose is phone number you need first validate the phone number with the SMS")]
+        [GraphQLDescription("Sign up session with your email or phone number, if you choose phone number ,you need first validate the phone number with the SMS")]
         public async Task<ResponseType<string>> SignUpUser([Service] ISignUpCase signUpCase, UserTypeIn user)
         {
             if (string.IsNullOrWhiteSpace(user.PhoneNumber) && string.IsNullOrWhiteSpace(user.Email))
