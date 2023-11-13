@@ -172,7 +172,6 @@ namespace Instagram.Presentation.GraphQL.Mutations
         [Authorize]
         [GraphQLDescription("Here you can update the pronoun of an user, but the user needs to be authorized")]
         public async Task<ResponseType<string>> UpdatePronoun([Service] IEditProfileCase editProfileCase, PronounEnum pronoun, Guid userId)
-
             => await editProfileCase.UpdatePronoun(pronoun, userId);
 
         [Authorize]
