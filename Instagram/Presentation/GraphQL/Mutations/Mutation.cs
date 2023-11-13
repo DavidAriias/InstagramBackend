@@ -90,7 +90,7 @@ namespace Instagram.Presentation.GraphQL.Mutations
                 throw new CustomGraphQlError("You can't make an Instagram account", HttpStatusCode.Conflict);
             }
 
-            if (!string.IsNullOrWhiteSpace(user.Email))
+            if (string.IsNullOrWhiteSpace(user.Email))
             {
                 throw new CustomGraphQlError("The email is empty", HttpStatusCode.BadRequest);
             }
