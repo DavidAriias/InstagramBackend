@@ -3,6 +3,7 @@ using Instagram.Domain.Repositories.Interfaces.Cache;
 using Instagram.Domain.Repositories.Interfaces.Document.Post;
 using Instagram.Domain.Repositories.Interfaces.Document.Reel;
 using Instagram.Domain.Repositories.Interfaces.Document.Story;
+using Instagram.Domain.Repositories.Interfaces.Graph.User;
 using Instagram.Domain.Repositories.Interfaces.SQL.User;
 using Instagram.Infraestructure.Mappers.User;
 using Newtonsoft.Json;
@@ -16,12 +17,14 @@ namespace Instagram.App.UseCases.UserCase.GetProfile
         private readonly IPostMongoDbRepository _postRepository;
         private readonly IReelMongoDbRepository _reelRepository;
         private readonly IStoryMongoDbRepository _storyRepository;
+        private readonly IUserNeo4jRepository _neo4jRepository;
         public GetProfileCase(
             IUserSQLDbRepository userRepository, 
             IRedisRepository redisRepository,
             IPostMongoDbRepository postRepository,
             IReelMongoDbRepository reelRepository,
-            IStoryMongoDbRepository storyRepository
+            IStoryMongoDbRepository storyRepository,
+            IUserNeo4jRepository neo4JRepository
             ) 
         {
             _userRepository = userRepository;
@@ -29,13 +32,13 @@ namespace Instagram.App.UseCases.UserCase.GetProfile
             _postRepository = postRepository;
             _reelRepository = reelRepository;
             _storyRepository = storyRepository;
+            _neo4jRepository = neo4JRepository;
         }
         public async Task<UserTypeOut?> GetProfile(Guid userId)
         {
             // Intenta obtener el perfil desde la caché.
             var cachedProfile = await TryGetCachedProfile(userId);
 
-            // Si se encuentra en la caché, devuélvelo.
             if (cachedProfile != null)
             {
                 return cachedProfile;
@@ -46,8 +49,9 @@ namespace Instagram.App.UseCases.UserCase.GetProfile
             var postUser = await _postRepository.GetAllPostsByIdAsync(userId.ToString());
             var reelUser = await _reelRepository.GetAllReelsByIdAsync(userId.ToString());
             var storyUser = await _storyRepository.GetAllStoriesByIdAsync(userId.ToString());
+            var followers = await _neo4jRepository.FollowersFromUser(userId.ToString());
+            var following = await _neo4jRepository.UsersFollowedByOthers(userId.ToString());
 
-            // Si no se encuentra el usuario en la base de datos, devuelve null.
             if (userSql == null)
             {
                 return null;
@@ -57,6 +61,10 @@ namespace Instagram.App.UseCases.UserCase.GetProfile
             userSql.Posts = postUser;
             userSql.Reels = reelUser;
             userSql.Stories = storyUser;
+
+            userSql.PostsNumber = storyUser?.Count() ?? 0;
+            userSql.FollowersCount = followers.Count();
+            userSql.FollowingCount = following.Count();
 
             var profile = UserMapper.MapUserEntityToUserTypeOut(userSql);
 

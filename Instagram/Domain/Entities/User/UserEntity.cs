@@ -17,6 +17,9 @@ namespace Instagram.Domain.Entities.User
         public string? UserPronoun { get; set; }
         public LinkEntity? Link { get; set; }
         public DateOnly UserBirthday { get; set; }
+        public long PostsNumber { get; set; }
+        public long FollowersCount { get; set; }
+        public long FollowingCount { get; set; }
         public IEnumerable<PostEntity>? Posts { get; set; }
         public IEnumerable<ReelEntity>? Reels { get; set; }
         public IEnumerable<StoryEntity>? Stories { get; set; }

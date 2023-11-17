@@ -15,6 +15,9 @@ namespace Instagram.App.UseCases.UserCase.Types
         public string? Pronoun { get; set; }
         public LinkType? Link { get; set; }
         public DateOnly Birthday { get; set; }
+        public long PostsNumber { get; set; }
+        public long FollowersCount { get; set; }
+        public long FollowingCount { get; set; }
 
         [UsePaging]
         public IEnumerable<PostTypeOut>? Posts { get; set; }
