@@ -8,6 +8,7 @@ namespace Instagram.App.UseCases.UserCase.Types
     {
         public Guid Id { get; set; }
         public string Username { get; set; } = null!;
+        public string? Name { get; set; } = null!;
         public bool Isverificated { get; set; }
         public bool IsPrivate { get; set; }
         public string? ImageProfile { get; set; }

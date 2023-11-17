@@ -34,6 +34,7 @@ namespace Instagram.Infraestructure.Mappers.User
             Birthday = user.UserBirthday,
             Description = user.Description,
             Id = user.Id,
+            Name = user.Name,
             ImageProfile = user.Imageprofile,
             Isverificated = user.Isverificated,
             PostsNumber = user.PostsNumber,
