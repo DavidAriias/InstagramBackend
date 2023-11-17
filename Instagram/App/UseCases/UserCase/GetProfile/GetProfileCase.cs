@@ -62,7 +62,7 @@ namespace Instagram.App.UseCases.UserCase.GetProfile
             userSql.Reels = reelUser;
             userSql.Stories = storyUser;
 
-            userSql.PostsNumber = storyUser?.Count() ?? 0;
+            userSql.PostsNumber = postUser?.Count() ?? 0;
             userSql.FollowersCount = followers.Count();
             userSql.FollowingCount = following.Count();
 
