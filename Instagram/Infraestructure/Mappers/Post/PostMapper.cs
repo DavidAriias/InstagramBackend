@@ -79,6 +79,7 @@ namespace Instagram.Infraestructure.Mappers
         };
         public static PostTypeOut MapPostEntityToPostTypeOut(PostEntity postEntity) => new()
         {
+            ImageProfile = postEntity.ImageProfile,
             Caption = postEntity.Caption,
             PostId = postEntity.PostId,
             Likes = postEntity.Likes,
