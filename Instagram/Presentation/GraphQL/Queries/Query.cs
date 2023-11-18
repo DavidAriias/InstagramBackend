@@ -9,7 +9,6 @@ using Instagram.App.UseCases.MediaCases.Types.Stories;
 using Instagram.App.UseCases.MusicCase;
 using Instagram.App.UseCases.SearchCase;
 using Instagram.App.UseCases.Types.Search;
-using Instagram.App.UseCases.Types.Shared;
 using Instagram.App.UseCases.UserCase.Followed;
 using Instagram.App.UseCases.UserCase.Followers;
 using Instagram.App.UseCases.UserCase.GetProfile;
