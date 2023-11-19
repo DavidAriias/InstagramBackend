@@ -14,7 +14,7 @@ namespace Instagram.Infraestructure.Data.Repositories.SQL
         public UserSQLDbRepository(InstagramContext context)
         {
             _context = context;
-        ]
+        }
 
         public async Task<UserEntity?> CreateUser(UserEntity user)
         {
