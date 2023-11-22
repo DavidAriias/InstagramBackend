@@ -120,6 +120,7 @@ namespace Instagram.Presentation.GraphQL.Mutations
              * Valida que la contraseña sea de longitud de min 8 caracteres y de max 16,
              * que contenga mayusculas y minusculas
              */
+
             if (!PassHelper.IsValidPass(password)) throw new CustomGraphQlError("The password must be at least 8 characters, use mayus, minus and symbols", HttpStatusCode.BadRequest);
 
             return await editProfileCase.UpdatePassword(password, userId);
