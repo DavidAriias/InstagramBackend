@@ -150,6 +150,7 @@ builder.Services
     .AddType<UploadType>()
     .AddMutationConventions()
     .AddAuthorization();
+
   
 var app = builder.Build();
 
