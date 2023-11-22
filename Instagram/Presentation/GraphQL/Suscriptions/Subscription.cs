@@ -3,6 +3,8 @@ using Instagram.App.UseCases.MediaCases.Types.Posts;
 using Instagram.App.UseCases.MediaCases.Types.Reels;
 using Instagram.App.UseCases.MediaCases.Types.Shared.Media.Events;
 using Instagram.App.UseCases.MediaCases.Types.Stories;
+using Instagram.App.UseCases.SearchCase;
+using Instagram.App.UseCases.Types.Search;
 using Instagram.App.UseCases.UserCase.Followed;
 using Instagram.App.UseCases.UserCase.Types.Events;
 

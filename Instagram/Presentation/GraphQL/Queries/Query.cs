@@ -60,13 +60,6 @@ namespace Instagram.Presentation.GraphQL.Queries
 
         [Authorize]
         [UsePaging]
-        public async Task<IReadOnlyCollection<SearchType>?> SearchUsers([Service] ISeachCase searhCase,string input)
-        {
-            return await searhCase.SearchUsers(input);
-        }
-
-        [Authorize]
-        [UsePaging]
         [GraphQLDescription("Get feed post about users that one user followed it using user id, but user needs to be authorized")]
         public async Task<IReadOnlyList<PostTypeOut>> GetFeedPostByUserId([Service] IPostCase postCase, Guid userId)
         {
@@ -94,6 +87,13 @@ namespace Instagram.Presentation.GraphQL.Queries
         {
             if (authType.Token is null) throw new CustomGraphQlError("You must send access token", HttpStatusCode.BadRequest);
             return await authService.CheckStatus(authType);
+        }
+
+        [Authorize]
+        [UsePaging]
+        public async Task<IReadOnlyCollection<SearchType>?> SearchUsers([Service] ISeachCase searchCase, string input)
+        {
+            return await searchCase.SearchUsers(input);
         }
 
     }
