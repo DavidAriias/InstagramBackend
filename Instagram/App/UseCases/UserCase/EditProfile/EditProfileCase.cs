@@ -1,7 +1,6 @@
 ﻿using Instagram.App.UseCases.Types.Shared;
 using Instagram.App.UseCases.UserCase.Types;
 using Instagram.config.helpers;
-using Instagram.Domain.Entities.User;
 using Instagram.Domain.Enums;
 using Instagram.Domain.Repositories.Interfaces.Blob;
 using Instagram.Domain.Repositories.Interfaces.Graph.User;
