@@ -125,6 +125,7 @@ namespace Instagram.Presentation.GraphQL.Suscriptions
             [EventMessage] ReplyEventType eventFollow,
             Guid receiverId)
         {
+
             if (receiverId == eventFollow.ReceiverId) return eventFollow;
 
             return null;
