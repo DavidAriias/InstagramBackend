@@ -23,7 +23,7 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build Instagram.sln --configuration Debug
 
       - name: dotnet publish
         run: dotnet publish -c Debug -o ${{env.DOTNET_ROOT}}/myapp
