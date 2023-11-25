@@ -1,3 +1,5 @@
+
+
 name: Build and deploy ASP.Net Core app to Azure Web App - instagramback
 
 on:
@@ -11,22 +13,22 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up .NET Core
-        uses: actions/setup-dotnet@v7
+        uses: actions/setup-dotnet@v2
         with:
           dotnet-version: '7.x'
           include-prerelease: true
 
       - name: Build with dotnet
-        run: |
-          dotnet build Instagram.sln --configuration Debug
-          dotnet publish Instagram.sln -c Debug -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet build Instagram.sln --configuration Debug
+
+      - name: dotnet publish
+        run: dotnet publish Instagram.sln -c Debug -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
@@ -40,7 +42,7 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: .net-app
 
@@ -51,4 +53,4 @@ jobs:
           app-name: 'instagramback'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3499E919EFAB498CB62768A97E747C74 }}
-          package: .net-app
+          package: .
