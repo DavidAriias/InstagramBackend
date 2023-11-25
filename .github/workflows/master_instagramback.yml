@@ -25,7 +25,7 @@ jobs:
         run: dotnet build Instagram.sln --configuration Debug
 
       - name: dotnet publish
-        run: dotnet publish Instagram.sln -c Debug -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish Instagram.sln -c Debug ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
