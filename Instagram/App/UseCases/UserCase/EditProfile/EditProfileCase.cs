@@ -88,7 +88,7 @@ namespace Instagram.App.UseCases.UserCase.EditProfile
                  );
         }
 
-        public async Task<ResponseType<string>> UpdateImageProfile(IFile imageProfile, Guid userId)
+        public async Task<ResponseType<string>> UpdateImageProfile(IFormFile imageProfile, Guid userId)
         {
             if (imageProfile.Length > 0)
             {

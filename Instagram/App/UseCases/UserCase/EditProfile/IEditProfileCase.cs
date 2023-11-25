@@ -13,7 +13,7 @@ namespace Instagram.App.UseCases.UserCase.EditProfile
         public Task<ResponseType<string>> UpdateBiography(string bio, Guid userId);
         public Task<ResponseType<string>> UpdateName(string name, Guid userId);
         public Task<ResponseType<string>> UpdatePronoun(PronounEnum pronoun, Guid userId);
-        public Task<ResponseType<string>> UpdateImageProfile(IFile imageProfile, Guid userId);
+        public Task<ResponseType<string>> UpdateImageProfile(IFormFile imageProfile, Guid userId);
         public Task<ResponseType<string>> UpdateIsPrivateProfile(Guid userId);
         public Task<ResponseType<string>> UpdateIsVerificateProfile(Guid userId);
 

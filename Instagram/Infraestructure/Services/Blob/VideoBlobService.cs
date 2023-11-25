@@ -48,7 +48,7 @@ namespace Instagram.Infraestructure.Services.Cloud
                 return false; // La eliminación falló
             }
         }
-        public async Task<string?> UploadPostVideoAsync(IFile file, Guid userId)
+        public async Task<string?> UploadPostVideoAsync(IFormFile file, Guid userId)
         {
             var containerClient = _client.GetBlobContainerClient(containerName);
 
@@ -95,7 +95,7 @@ namespace Instagram.Infraestructure.Services.Cloud
             return null;
         }
 
-        public async Task<string?> UploadReelAsync(IFile file, Guid userId)
+        public async Task<string?> UploadReelAsync(IFormFile file, Guid userId)
         {
             var containerClient = _client.GetBlobContainerClient(containerName);
 
@@ -142,7 +142,7 @@ namespace Instagram.Infraestructure.Services.Cloud
             return null;
         }
 
-        public async Task<string?> UploadStoryAsync(IFile file, Guid userId)
+        public async Task<string?> UploadStoryAsync(IFormFile file, Guid userId)
         {
 
             var containerClient = _client.GetBlobContainerClient(containerName);

@@ -52,7 +52,7 @@ namespace Instagram.Infraestructure.Services.Cloud
             }
         }
 
-        public async Task<string> UpdateProfileImageAsync(IFile file, string imageUrl)
+        public async Task<string> UpdateProfileImageAsync(IFormFile file, string imageUrl)
         {
 
             BlobContainerClient containerClient = _client.GetBlobContainerClient(containerName);
@@ -74,7 +74,7 @@ namespace Instagram.Infraestructure.Services.Cloud
         }
 
 
-        public async Task<string?> UploadPostImageAsync(IFile file, Guid userId)
+        public async Task<string?> UploadPostImageAsync(IFormFile file, Guid userId)
         {
 
             var containerClient = _client.GetBlobContainerClient(containerName);
@@ -127,7 +127,7 @@ namespace Instagram.Infraestructure.Services.Cloud
         }
 
 
-        public async Task<string> UploadProfileImageAsync(IFile file, Guid userId)
+        public async Task<string> UploadProfileImageAsync(IFormFile file, Guid userId)
         {
             var containerClient = _client.GetBlobContainerClient(containerName);
 
@@ -147,7 +147,7 @@ namespace Instagram.Infraestructure.Services.Cloud
             return blobClient.Uri.ToString();
         }
 
-        public async Task<string?> UploadStoryAsync(IFile file, Guid userId)
+        public async Task<string?> UploadStoryAsync(IFormFile file, Guid userId)
         {
             var containerClient = _client.GetBlobContainerClient(containerName);
 

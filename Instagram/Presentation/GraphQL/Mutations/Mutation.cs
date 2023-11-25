@@ -175,12 +175,12 @@ namespace Instagram.Presentation.GraphQL.Mutations
         public async Task<ResponseType<string>> UpdatePronoun([Service] IEditProfileCase editProfileCase, PronounEnum pronoun, Guid userId)
             => await editProfileCase.UpdatePronoun(pronoun, userId);
 
-        [Authorize]
-        [GraphQLDescription("Here you can update the image profile of an user, but the user needs to be authorized")]
-        public async Task<ResponseType<string>> UpdateImageProfile([Service] IEditProfileCase editProfileCase, IFile image, Guid userId)
-        {
-            return await editProfileCase.UpdateImageProfile(image, userId);
-        }
+//        [Authorize]
+  //      [GraphQLDescription("Here you can update the image profile of an user, but the user needs to be authorized")]
+        //public async Task<ResponseType<string>> UpdateImageProfile([Service] IEditProfileCase editProfileCase, IFile image, Guid userId)
+        //{
+         //   return await editProfileCase.UpdateImageProfile(image, userId);
+        //}
 
 
         [GraphQLDescription("Here you can follow to an user, but you need to send the id's from users, and the follow user needs to be authorized")]

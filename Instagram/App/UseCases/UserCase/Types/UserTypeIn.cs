@@ -11,6 +11,6 @@ namespace Instagram.App.UseCases.UserCase.Types
         public string Password { get; set; } = null!;
         public DateOnly Birthday { get; set; }
         public PronounEnum? Pronoun { get; set; }
-        public IFile? ImageProfile { get; set; }
+        public IFormFile? ImageProfile { get; set; }
     }
 }

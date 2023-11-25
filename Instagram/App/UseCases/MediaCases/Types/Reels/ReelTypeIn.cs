@@ -12,7 +12,7 @@ namespace Instagram.App.UseCases.MediaCases.Types.Reels
         public Guid UserId { get; set; }
         public string Username { get; set; } = null!;
         public List<MentionType>? Mentions { get; set; }
-        public IFile File { get; set; } = null!;
+        public IFormFile File { get; set; } = null!;
         public double Duration { get; set; }
     }
 }

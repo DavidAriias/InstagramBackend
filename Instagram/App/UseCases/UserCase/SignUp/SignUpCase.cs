@@ -17,7 +17,6 @@ namespace Instagram.App.UseCases.UserCase.SignUp
         public SignUpCase(
             IUserSQLDbRepository sQLDbRepository,
             IUserNeo4jRepository neo4JRepository,
-            INotificationsSQLDbRepository notificationRepository,
             IImageBlobService blobService) 
         {
 
