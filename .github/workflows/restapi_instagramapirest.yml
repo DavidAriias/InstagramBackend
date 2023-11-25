@@ -4,7 +4,7 @@ name: Build and deploy ASP.Net Core app to Azure Web App -
 on:
   push:
     branches:
-      - master
+      - restapi
   workflow_dispatch:
 
 jobs:
